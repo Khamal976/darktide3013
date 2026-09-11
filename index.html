@@ -120,6 +120,8 @@ footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);font-si
 
 <div class="note"><p>Причины накладываются. Обычно сначала видно A, после её лечения проявляется B, после B остаётся C. Поэтому «исправил, а 3013 всё равно» чаще всего значит, что вылечена не та причина.</p></div>
 
+<div class="note warn"><p><strong>Блокировка мигает.</strong> Фильтрация UDP до AWS то включается, то пропадает: у одного и того же провайдера в один день игра заходит сама, на следующий снова 3013. Это подтверждено прямым замером с одного ПК: 9–10 сентября UDP до AWS не проходил вообще, 11 сентября тот же тест пошёл напрямую, без обхода. Отсюда два вывода. Если 3013 «сам прошёл», не удаляйте обход, он понадобится, когда блок вернётся. И наоборот, если ничего не помогает, имеет смысл просто попробовать позже: возможно, поймали активную фазу.</p></div>
+
 <h2 id="diag">2. Определяем свою причину по логу</h2>
 <p>Игра пишет подробный лог. Откройте папку (вставьте путь в адресную строку проводника):</p>
 <pre><code>%APPDATA%\Fatshark\Darktide\console_logs</code></pre>
@@ -561,6 +563,8 @@ foreach ($t in $targets) {
 <div class="cause"><span class="k">Cause C</span><span><strong>UDP does not reach the hub server.</strong> After character select the game looks for the Mourningstar server by bare IP on UDP port 355xx. Those servers live in AWS (Frankfurt, Ireland, Stockholm), and UDP to them does not get through from Russia. Symptom: the character screen opens, then 3013 every time after picking one.</span></div>
 
 <div class="note"><p>The causes stack. Usually you see A first; fix it and B shows up; fix B and C remains. So "I fixed it and still get 3013" most often means the wrong cause was fixed.</p></div>
+
+<div class="note warn"><p><strong>The block flickers.</strong> UDP filtering to AWS comes and goes: on the same ISP the game connects on its own one day and returns 3013 the next. Confirmed by a direct measurement from one PC: on 9–10 September UDP to AWS did not pass at all, on 11 September the same test went through directly, with no workaround. Two takeaways. If 3013 "fixed itself", do not remove your workaround, you will need it when the block returns. And the other way round, if nothing helps, it is worth simply trying again later: you may have hit an active phase.</p></div>
 
 <h2>2. Find your cause in the log</h2>
 <p>The game writes a detailed log. Open this folder (paste the path into the Explorer address bar):</p>
