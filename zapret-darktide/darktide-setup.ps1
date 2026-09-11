@@ -41,8 +41,10 @@ Get-ChildItem -Path $root -Filter 'general*.bat' | ForEach-Object {
   $lines = $text -split "`r?`n"
   $out = New-Object System.Collections.Generic.List[string]
   $inserted = $false
+  $killed = $false
   foreach ($line in $lines) {
     $out.Add($line)
+    if (-not $killed -and $line -match '^cd /d "%~dp0"') { $out.Add('tasklist /FI "IMAGENAME eq winws.exe" | find /I "winws.exe" >nul && taskkill /IM winws.exe /F >nul'); $killed = $true }
     if (-not $inserted -and $line -match 'winws\.exe' -and $line -match '--wf-udp=') { $out.Add($udpProfile); $inserted = $true }
   }
   if (-not $inserted) { Say ("[skip] " + $_.Name + ": winws line not found"); return }
