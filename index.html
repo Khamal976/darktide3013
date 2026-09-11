@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Ошибка 3013 в Warhammer 40,000: Darktide из России: три причины под одним кодом, диагностика по логу, исправление через роутер (OpenWrt + Passwall 2) или на ПК.">
+<meta name="description" content="Ошибка 3013 в Warhammer 40,000: Darktide из России: три причины под одним кодом, диагностика по логу, готовый файл для zapret, исправление через роутер (OpenWrt + Passwall 2). Darktide error 3013 from Russia: causes, log diagnosis, zapret drop-in, router fix.">
 <meta name="color-scheme" content="light dark">
 <style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Darktide 3013</title>
@@ -32,10 +32,15 @@
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,Segoe UI,Roboto,sans-serif;font-size:16px;line-height:1.55}
-.wrap{max-width:74ch;margin:0 auto;padding:40px 24px 96px}
-header{border-bottom:2px solid var(--accent);padding-bottom:20px;margin-bottom:36px}
+.wrap{max-width:74ch;margin:0 auto;padding:32px 24px 96px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:28px}
 .eyebrow{font-family:"Oswald",Impact,sans-serif;font-weight:500;letter-spacing:.14em;text-transform:uppercase;font-size:12px;color:var(--accent-ink)}
-h1{font-family:"Oswald",Impact,"Arial Narrow",sans-serif;font-weight:600;font-size:44px;line-height:1.05;margin:8px 0 12px;text-wrap:balance;letter-spacing:.01em}
+.langsw{display:inline-flex;border:1px solid var(--line);border-radius:3px;overflow:hidden}
+.langsw button{font-family:"Oswald",Impact,sans-serif;font-size:13px;letter-spacing:.1em;text-transform:uppercase;padding:6px 14px;border:0;background:transparent;color:var(--ink-2);cursor:pointer}
+.langsw button[aria-pressed="true"]{background:var(--accent);color:var(--bg)}
+.langsw button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+header{border-bottom:2px solid var(--accent);padding-bottom:20px;margin-bottom:36px}
+h1{font-family:"Oswald",Impact,"Arial Narrow",sans-serif;font-weight:600;font-size:44px;line-height:1.05;margin:0 0 12px;text-wrap:balance;letter-spacing:.01em}
 .lede{font-size:18px;color:var(--ink-2);margin:0;max-width:62ch}
 .meta{font-size:13px;color:var(--ink-3);margin-top:14px}
 h2{font-family:"Oswald",Impact,"Arial Narrow",sans-serif;font-weight:600;font-size:26px;letter-spacing:.02em;margin:48px 0 12px;text-wrap:balance}
@@ -50,13 +55,15 @@ table{border-collapse:collapse;width:100%;margin:0 0 18px;font-size:15px}
 th,td{text-align:left;vertical-align:top;padding:9px 10px;border-bottom:1px solid var(--line)}
 th{font-family:"Oswald",sans-serif;font-weight:500;letter-spacing:.08em;text-transform:uppercase;font-size:12px;color:var(--ink-3)}
 .tablewrap{overflow-x:auto;margin:0 0 18px}
-.tag{display:inline-block;font-family:"Oswald",sans-serif;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:2px;white-space:nowrap}
+.tag{display:inline-block;font-family:"Oswald",sans-serif;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:2px;white-space:nowrap;vertical-align:middle}
 .tag.a{background:var(--accent-bg);color:var(--accent-ink)}
 .tag.bad{background:var(--bad-bg);color:var(--bad)}
 .tag.good{background:var(--good-bg);color:var(--good)}
 .note{border-left:3px solid var(--accent);background:var(--bg-2);padding:12px 16px;margin:0 0 18px}
 .note.warn{border-left-color:var(--bad)}
 .note p:last-child{margin-bottom:0}
+.dl{display:inline-block;font-family:"Oswald",sans-serif;font-size:15px;letter-spacing:.06em;text-transform:uppercase;background:var(--accent);color:var(--bg);padding:10px 18px;border-radius:3px;text-decoration:none;margin:4px 0 14px}
+.dl:hover,.dl:focus-visible{filter:brightness(1.08)}
 .toc{background:var(--bg-2);padding:16px 20px;margin:0 0 8px}
 .toc ol{margin:0;padding-left:20px}
 .toc a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line)}
@@ -70,13 +77,22 @@ details pre{margin-top:12px;max-height:320px;overflow:auto}
 .cause .k{font-family:"Oswald",sans-serif;letter-spacing:.06em;text-transform:uppercase;font-size:12px;color:var(--ink-3);white-space:nowrap}
 .mono{font-family:"IBM Plex Mono",Consolas,monospace;font-size:.92em}
 footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-3)}
-@media (max-width:600px){h1{font-size:34px}.wrap{padding:28px 16px 72px}}
+@media (max-width:600px){h1{font-size:34px}.wrap{padding:24px 16px 72px}}
 </style>
 </head>
 <body>
 <div class="wrap">
+<div class="topbar">
+  <div class="eyebrow" data-i18n="eyebrow">Warhammer 40,000: Darktide · Россия · сентябрь 2026</div>
+  <div class="langsw" role="group" aria-label="Language">
+    <button type="button" data-setlang="ru" aria-pressed="true">RU</button>
+    <button type="button" data-setlang="en" aria-pressed="false">EN</button>
+  </div>
+</div>
+
+<!-- ======================= RU ======================= -->
+<div class="lang" data-lang="ru">
 <header>
-  <div class="eyebrow">Warhammer 40,000: Darktide · Россия · сентябрь 2026</div>
   <h1>Ошибка 3013: три причины под одним кодом и как их чинить</h1>
   <p class="lede">Код 3013 игра выдаёт на любой сетевой сбой между авторизацией и входом в хаб. Под ним у игроков из России прячутся три разные поломки, и лечатся они по-разному. Ниже: как по логу узнать свою, и что делать с каждой.</p>
   <div class="meta">Разбор сделан на реальном ПК (Windows 11, Steam, роутер OpenWrt с Passwall 2). Всё, что помечено «проверено», воспроизведено и подтверждено логом игры. Остальное собрано из гайдов сообщества и не проверялось.</div>
@@ -87,8 +103,9 @@ footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);font-si
   <li><a href="#what">Что на самом деле стоит за 3013</a></li>
   <li><a href="#diag">Определяем свою причину по логу</a></li>
   <li><a href="#hosts">Куда ходит игра</a></li>
+  <li><a href="#zapret">Самое простое: готовый файл для zapret</a></li>
   <li><a href="#router">Исправление через роутер (OpenWrt + Passwall 2)</a></li>
-  <li><a href="#pc">Исправление только на ПК</a></li>
+  <li><a href="#pc">Другие варианты на ПК</a></li>
   <li><a href="#check">Проверка без запуска игры</a></li>
   <li><a href="#no">Что не помогает</a></li>
 </ol>
@@ -98,7 +115,7 @@ footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);font-si
 <p>Игра проходит три сетевых этапа, и любой из них может сорваться в 3013.</p>
 
 <div class="cause"><span class="k">Причина A</span><span><strong>Авторизация не доходит до сервера.</strong> Серверы Fatshark (<span class="mono">*.atoma.cloud</span>) живут на AWS CloudFront. Провайдер пропускает TCP, но режет TLS-рукопожатие к CloudFront: соединение зависает на 60 секунд и обрывается. Симптом: 3013 сразу на экране входа.</span></div>
-<div class="cause"><span class="k">Причина B</span><span><strong>Windows не может проверить сертификат сервера.</strong> Перед TLS Windows ходит за списками отзыва на <span class="mono">*.amazontrust.com</span> по обычному HTTP. Если этот трафик завёрнут в VPN-туннель, который до Amazon не дотягивается, авторизация падает с ошибкой отзыва. Симптом: вход проходит «со второго-третьего раза», иногда вообще нет.</span></div>
+<div class="cause"><span class="k">Причина B</span><span><strong>Windows не может проверить сертификат сервера.</strong> Перед TLS Windows ходит за списками отзыва на <span class="mono">*.amazontrust.com</span> по обычному HTTP. Если этот трафик завёрнут в VPN-туннель, который до Amazon не дотягивается, авторизация падает с ошибкой отзыва. Симптом: вход проходит «со второго-третьего раза», иногда вообще нет. Без VPN эта причина не возникает.</span></div>
 <div class="cause"><span class="k">Причина C</span><span><strong>Не доходит UDP до хаб-сервера.</strong> После выбора персонажа игра ищет сервер Морнингстара по голому IP на UDP-порту 355xx. Сервера стоят в AWS (Франкфурт, Ирландия, Стокгольм), и UDP до них из России не проходит. Симптом: экран выбора персонажа открывается, а после выбора всегда 3013.</span></div>
 
 <div class="note"><p>Причины накладываются. Обычно сначала видно A, после её лечения проявляется B, после B остаётся C. Поэтому «исправил, а 3013 всё равно» чаще всего значит, что вылечена не та причина.</p></div>
@@ -131,12 +148,25 @@ footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);font-si
 <tr><td>Обнаружение и авторизация</td><td class="mono">bsp-sup-sd.atoma-discovery.com<br>bsp-auth-prod.atoma.cloud</td><td>TCP 443</td></tr>
 <tr><td>Игровой бэкенд, матчмейкинг, CDN</td><td class="mono">bsp-td-prod.atoma.cloud<br>bsp-td-prod-matchmaking.atoma.cloud<br>bsp-cdn-prod.atoma.cloud<br>fr-prod.atoma.cloud</td><td>TCP 443 (HTTPS и gRPC)</td></tr>
 <tr><td>Проверка отзыва сертификатов</td><td class="mono">ocsp.r2m02.amazontrust.com<br>crl.r2m02.amazontrust.com<br>crl.rootca1.amazontrust.com<br>ocsp.rootca1.amazontrust.com</td><td>TCP 80, должен идти напрямую</td></tr>
-<tr><td>Хаб- и игровые серверы</td><td>IP-адреса AWS EC2 в регионах eu-central-1, eu-west-1, eu-north-1 (например 18.192.179.115, 52.208.211.66, 51.21.1.149). Домена нет, только IP.</td><td>UDP 35500–35600</td></tr>
+<tr><td>Хаб- и игровые серверы</td><td>IP-адреса AWS EC2 в регионах eu-central-1, eu-west-1, eu-north-1 (например 18.192.179.115, 52.208.211.66, 13.61.11.157). Домена нет, только IP.</td><td>UDP 35500–35600</td></tr>
 </tbody>
 </table>
 </div>
 
-<h2 id="router">4. Исправление через роутер (OpenWrt + Passwall 2) <span class="tag good">проверено</span></h2>
+<h2 id="zapret">4. Самое простое: готовый файл для zapret <span class="tag a">причина A</span></h2>
+<p>Если у вас уже стоит zapret (сборка <span class="mono">Flowseal/zapret-discord-youtube</span>, версия 1.10.x), то для 3013 <strong>на экране входа</strong> ничего настраивать не надо. Скачайте архив, скопируйте, запустите.</p>
+<a class="dl" href="zapret-darktide.zip" download>Скачать zapret-darktide.zip</a>
+<ol>
+  <li>Распакуйте архив.</li>
+  <li>Файл <span class="mono">darktide.bat</span> положите в папку zapret, рядом с <span class="mono">general.bat</span>.</li>
+  <li>Два файла из папки <span class="mono">lists</span> положите в папку <span class="mono">zapret\lists</span>.</li>
+  <li>Запустите <span class="mono">darktide.bat</span> от имени администратора и не закрывайте окно.</li>
+  <li>Запустите игру.</li>
+</ol>
+<p>Внутри: та же стратегия, что в <span class="mono">general.bat</span> (YouTube и Discord продолжат работать), плюс правило для доменов игры и правило для UDP-портов хабов. Если на экране входа всё равно 3013, стратегию нужно подобрать под провайдера: закройте <span class="mono">darktide.bat</span>, добавьте строки <span class="mono">atoma.cloud</span> и <span class="mono">atoma-discovery.com</span> в <span class="mono">lists\list-general-user.txt</span> и перебирайте <span class="mono">general (ALT).bat</span>, <span class="mono">ALT2</span>, <span class="mono">ALT3</span> из сборки.</p>
+<div class="note warn"><p><strong>Честное ограничение.</strong> zapret обманывает DPI, но не может провести пакет туда, куда его не пускают по адресу. Для 3013 <strong>после выбора персонажа</strong> (причина C) UDP-правило в файле есть, но сработает ли оно у вашего провайдера, заранее не известно: проверка ещё идёт, результат появится здесь. Если после запуска <span class="mono">darktide.bat</span> в лог по-прежнему пишется <code>Found no lobby</code>, zapret тут бессилен и нужен VPN с поддержкой UDP, см. разделы 5 и 6.</p></div>
+
+<h2 id="router">5. Исправление через роутер (OpenWrt + Passwall 2) <span class="tag good">проверено</span></h2>
 <p>Самый надёжный путь: весь обход делает роутер, на ПК ничего не ставится. Схема применима к любому прокси с правилами по доменам и IP (sing-box, xray, HomeProxy, Podkop), названия полей будут отличаться.</p>
 
 <h3>Шаг 1. Домены игры в туннель</h3>
@@ -446,24 +476,16 @@ domain:atoma-discovery.com</code></pre>
 <p>В Passwall 2 также проверьте: Forwarding Settings → TCP Redir Ports и UDP Redir Ports = All.</p>
 
 <h3>Шаг 4. Узел обязан пропускать UDP</h3>
-<div class="note warn"><p><strong>Главная ловушка.</strong> Узлы-«whitelist» (VLESS + WebSocket через российский фронт-релей с подменой SNI) пропускают TCP и не пропускают UDP. С таким узлом шаги 1–3 выполнены, авторизация проходит, а хаб всё равно даёт 3013. Проверьте узел STUN-тестом из раздела 6 до того, как искать ошибку в правилах. Если UDP не идёт, нужен другой узел: VLESS Reality напрямую, Hysteria2, TUIC, WireGuard или AmneziaWG.</p></div>
+<div class="note warn"><p><strong>Главная ловушка.</strong> Узлы-«whitelist» (VLESS + WebSocket через российский фронт-релей с подменой SNI) пропускают TCP и не пропускают UDP. С таким узлом шаги 1–3 выполнены, авторизация проходит, а хаб всё равно даёт 3013. Проверьте узел STUN-тестом из раздела 7 до того, как искать ошибку в правилах. Если UDP не идёт, нужен другой узел: VLESS Reality напрямую, Hysteria2, TUIC, WireGuard или AmneziaWG.</p></div>
 
 <h3>Итог на реальной конфигурации</h3>
 <p>После четырёх шагов лог показал <code>Found lobby, joining...</code>, <code>Joined lobby</code>, вход в хаб. Ошибок авторизации и отзыва сертификатов ноль. Выход туннеля в Швеции, хаб в Стокгольме, пинг рабочий.</p>
 
-<h2 id="pc">5. Исправление только на ПК <span class="tag a">частично проверено</span></h2>
-<p>Если роутера с прокси нет, обход нужно поднять на самом компьютере. Здесь два разных инструмента под разные причины.</p>
+<h2 id="pc">6. Другие варианты на ПК <span class="tag a">не проверено</span></h2>
+<p>Если роутера с прокси нет, а zapret не вытянул причину C, обход UDP нужно поднять на самом компьютере. Обычный клиент Cloudflare WARP <strong>не работает</strong>: оба его протокола, MASQUE и WireGuard, блокируются (проверено, подключение не устанавливается ни на одном порту).</p>
+<p>Рабочий вариант из гайдов сообщества: AmneziaVPN с конфигом WARP через AmneziaWG-обфускацию (конфиг генерируется на warpgen.net или аналогах). Этот путь мной не проверялся, но именно он описан в актуальных Steam-гайдах по 3013. После подключения прогоните STUN-тест из раздела 7: первая строка должна стать REPLY. Любой другой VPN-клиент на ПК подойдёт при том же условии: он должен пропускать UDP, и его сервер должен дотягиваться до AWS.</p>
 
-<h3>Причина A: zapret</h3>
-<p>zapret (сборка <span class="mono">Flowseal/zapret-discord-youtube</span>) обходит DPI-фильтрацию TLS и закрывает причину A. В файл <span class="mono">lists/list-general-user.txt</span> добавьте две строки, затем запустите <span class="mono">general.bat</span> от администратора. Если не помогло, перебирайте варианты <span class="mono">general (ALT).bat</span>, <span class="mono">ALT2</span> и далее:</p>
-<pre><code>atoma.cloud
-atoma-discovery.com</code></pre>
-<p>Домен <span class="mono">cloudfront.net</span> в общем списке zapret уже есть. Проверить, что заработало, можно первой командой из раздела 6. zapret не решает причину C: UDP до хабов он не пробрасывает.</p>
-
-<h3>Причина C: VPN на ПК с UDP</h3>
-<p>Обычный клиент Cloudflare WARP <strong>не работает</strong>: оба его протокола, MASQUE и WireGuard, блокируются (проверено, подключение не устанавливается ни на одном порту). Рабочий вариант из гайдов сообщества: AmneziaVPN с конфигом WARP через AmneziaWG-обфускацию (конфиг генерируется на warpgen.net или аналогах). Этот путь мной не проверялся, но именно он описан в актуальных Steam-гайдах по 3013. После подключения прогоните STUN-тест из раздела 6: первая строка должна стать REPLY.</p>
-
-<h2 id="check">6. Проверка без запуска игры</h2>
+<h2 id="check">7. Проверка без запуска игры</h2>
 <p>Три проверки, каждая на свою причину. Запускать в PowerShell.</p>
 
 <h3>Причина A: TLS к серверу авторизации</h3>
@@ -491,7 +513,7 @@ foreach ($t in $targets) {
 }</code></pre>
 <p>Это STUN-запрос: сервер просто отвечает, откуда его видит. Если строка AWS даёт REPLY, хаб подключится.</p>
 
-<h2 id="no">7. Что не помогает</h2>
+<h2 id="no">8. Что не помогает</h2>
 <ul>
   <li><strong>Клиент Cloudflare WARP.</strong> Заблокирован на уровне протокола, не подключается.</li>
   <li><strong>ipconfig /flushdns, смена DNS на 8.8.8.8, проверка файлов игры.</strong> Проблема не в DNS и не в файлах: имена резолвятся, TLS и UDP режутся на пути.</li>
@@ -500,7 +522,474 @@ foreach ($t in $targets) {
   <li><strong>Только домены в прокси-списке.</strong> Хаб ищется по IP через UDP, доменные правила его не ловят. Без IP-правил и узла с UDP причина C остаётся.</li>
 </ul>
 
-<footer>Собрано 10 сентября 2026 по логам игры и сетевым тестам с одного ПК. Провайдеры фильтруют по-разному, у вас набор причин может отличаться, поэтому начинайте с раздела 2.</footer>
+<footer>Собрано 10–11 сентября 2026 по логам игры и сетевым тестам с одного ПК. Провайдеры фильтруют по-разному, у вас набор причин может отличаться, поэтому начинайте с раздела 2. Исходники и архив для zapret: <a href="https://github.com/Khamal976/darktide3013">github.com/Khamal976/darktide3013</a>.</footer>
 </div>
+
+<!-- ======================= EN ======================= -->
+<div class="lang" data-lang="en" hidden>
+<header>
+  <h1>Error 3013: three causes behind one code, and how to fix each</h1>
+  <p class="lede">Darktide shows code 3013 for any network failure between sign-in and entering the hub. For players in Russia, three different breakages hide behind it, and each needs a different fix. Below: how to tell yours from the game log, and what to do about it.</p>
+  <div class="meta">Worked out on a real PC (Windows 11, Steam, an OpenWrt router running Passwall 2). Everything marked "verified" was reproduced and confirmed by the game log. The rest is collected from community guides and was not tested.</div>
+</header>
+
+<nav class="toc" aria-label="Contents">
+<ol>
+  <li><a href="#what">What is really behind 3013</a></li>
+  <li><a href="#diag">Find your cause in the log</a></li>
+  <li><a href="#hosts">Where the game connects</a></li>
+  <li><a href="#zapret">Easiest: a drop-in file for zapret</a></li>
+  <li><a href="#router">Fix on the router (OpenWrt + Passwall 2)</a></li>
+  <li><a href="#pc">Other options on the PC</a></li>
+  <li><a href="#check">Checks without launching the game</a></li>
+  <li><a href="#no">What does not help</a></li>
+</ol>
+</nav>
+
+<h2>1. What is really behind 3013</h2>
+<p>The game goes through three network stages, and any of them can fail into 3013.</p>
+
+<div class="cause"><span class="k">Cause A</span><span><strong>Sign-in never reaches the server.</strong> Fatshark's backend (<span class="mono">*.atoma.cloud</span>) sits on AWS CloudFront. The ISP lets TCP through but kills the TLS handshake to CloudFront: the connection hangs for 60 seconds and drops. Symptom: 3013 right on the login screen.</span></div>
+<div class="cause"><span class="k">Cause B</span><span><strong>Windows cannot check the server certificate.</strong> Before TLS, Windows fetches revocation lists from <span class="mono">*.amazontrust.com</span> over plain HTTP. If that traffic is routed into a VPN tunnel that cannot reach Amazon, sign-in fails with a revocation error. Symptom: login succeeds "on the second or third try", sometimes never. Without a VPN this cause does not occur.</span></div>
+<div class="cause"><span class="k">Cause C</span><span><strong>UDP does not reach the hub server.</strong> After character select the game looks for the Mourningstar server by bare IP on UDP port 355xx. Those servers live in AWS (Frankfurt, Ireland, Stockholm), and UDP to them does not get through from Russia. Symptom: the character screen opens, then 3013 every time after picking one.</span></div>
+
+<div class="note"><p>The causes stack. Usually you see A first; fix it and B shows up; fix B and C remains. So "I fixed it and still get 3013" most often means the wrong cause was fixed.</p></div>
+
+<h2>2. Find your cause in the log</h2>
+<p>The game writes a detailed log. Open this folder (paste the path into the Explorer address bar):</p>
+<pre><code>%APPDATA%\Fatshark\Darktide\console_logs</code></pre>
+<p>Take the newest <span class="mono">console-YYYY-MM-DD-….log</span> and search it for the lines in the table. Search by the short fragment shown.</p>
+
+<div class="tablewrap">
+<table>
+<thead><tr><th>Line in the log</th><th>Cause</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td><code>schannel: timed out sending data (bytes sent: 0)</code><br>next to <code>Auth operation 1 error</code></td><td><span class="tag bad">A</span></td><td>TLS to the auth server never completes: the ISP is throttling CloudFront.</td></tr>
+<tr><td><code>CRYPT_E_REVOCATION_OFFLINE (0x80092013)</code></td><td><span class="tag bad">B</span></td><td>Windows could not reach Amazon's certificate revocation servers.</td></tr>
+<tr><td><code>Searching for WAN lobby on 52.208.x.x:35560</code><br>then 3 seconds later <code>Found no lobby, search finished.</code><br>and <code>failed_found_no_lobby</code></td><td><span class="tag bad">C</span></td><td>UDP packets to the hub server did not arrive or did not come back.</td></tr>
+<tr><td><code>Found lobby, joining...</code> → <code>Joined lobby</code> → <code>Mechanism hub changing state init_hub -&gt; in_hub</code></td><td><span class="tag good">OK</span></td><td>Everything works, you are in the hub.</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>Ignore <code>Vivox … Connection Terminated</code> lines: that is voice chat, it does not affect getting into the game.</p>
+
+<h2>3. Where the game connects</h2>
+<p>You need these addresses to configure any workaround. Collected from the game's own logs.</p>
+<div class="tablewrap">
+<table>
+<thead><tr><th>Purpose</th><th>Addresses</th><th>Protocol</th></tr></thead>
+<tbody>
+<tr><td>Discovery and sign-in</td><td class="mono">bsp-sup-sd.atoma-discovery.com<br>bsp-auth-prod.atoma.cloud</td><td>TCP 443</td></tr>
+<tr><td>Backend, matchmaking, CDN</td><td class="mono">bsp-td-prod.atoma.cloud<br>bsp-td-prod-matchmaking.atoma.cloud<br>bsp-cdn-prod.atoma.cloud<br>fr-prod.atoma.cloud</td><td>TCP 443 (HTTPS and gRPC)</td></tr>
+<tr><td>Certificate revocation checks</td><td class="mono">ocsp.r2m02.amazontrust.com<br>crl.r2m02.amazontrust.com<br>crl.rootca1.amazontrust.com<br>ocsp.rootca1.amazontrust.com</td><td>TCP 80, must go direct</td></tr>
+<tr><td>Hub and game servers</td><td>AWS EC2 IPs in eu-central-1, eu-west-1, eu-north-1 (for example 18.192.179.115, 52.208.211.66, 13.61.11.157). No domain, IP only.</td><td>UDP 35500–35600</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>4. Easiest: a drop-in file for zapret <span class="tag a">cause A</span></h2>
+<p>If you already run zapret (the <span class="mono">Flowseal/zapret-discord-youtube</span> build, version 1.10.x), there is nothing to configure for 3013 <strong>on the login screen</strong>. Download, copy, run.</p>
+<a class="dl" href="zapret-darktide.zip" download>Download zapret-darktide.zip</a>
+<ol>
+  <li>Unpack the archive.</li>
+  <li>Put <span class="mono">darktide.bat</span> into the zapret folder, next to <span class="mono">general.bat</span>.</li>
+  <li>Put the two files from <span class="mono">lists</span> into <span class="mono">zapret\lists</span>.</li>
+  <li>Run <span class="mono">darktide.bat</span> as administrator and keep the window open.</li>
+  <li>Launch the game.</li>
+</ol>
+<p>Inside: the same strategy as <span class="mono">general.bat</span> (YouTube and Discord keep working), plus a rule for the game's domains and a rule for the hub UDP ports. If the login screen still gives 3013, the strategy has to match your ISP: close <span class="mono">darktide.bat</span>, add <span class="mono">atoma.cloud</span> and <span class="mono">atoma-discovery.com</span> to <span class="mono">lists\list-general-user.txt</span>, and try <span class="mono">general (ALT).bat</span>, <span class="mono">ALT2</span>, <span class="mono">ALT3</span> from the build.</p>
+<div class="note warn"><p><strong>Honest limitation.</strong> zapret fools DPI; it cannot carry a packet to an address that is blocked outright. For 3013 <strong>after character select</strong> (cause C) the file does include a UDP rule, but whether it works on your ISP is not known yet: testing is in progress and the result will be posted here. If <code>Found no lobby</code> still appears in the log with <span class="mono">darktide.bat</span> running, zapret cannot help and you need a VPN that carries UDP, see sections 5 and 6.</p></div>
+
+<h2>5. Fix on the router (OpenWrt + Passwall 2) <span class="tag good">verified</span></h2>
+<p>The most reliable path: the router does all the bypassing, nothing is installed on the PC. The scheme applies to any proxy with domain and IP rules (sing-box, xray, HomeProxy, Podkop); field names will differ.</p>
+
+<h3>Step 1. Game domains into the tunnel</h3>
+<p>Add the domains to the rule that goes to your foreign node. This closes cause A.</p>
+<pre><code>domain:atoma.cloud
+domain:atoma-discovery.com</code></pre>
+
+<h3>Step 2. Amazon Trust goes direct</h3>
+<p>Create a rule <strong>above</strong> the proxy rule with the node set to "Direct Connection" and the domain:</p>
+<pre><code>domain:amazontrust.com</code></pre>
+<p>This closes cause B. These hosts must not go through the tunnel: from most foreign nodes they do not answer, and Windows treats the revocation check as failed.</p>
+
+<h3>Step 3. AWS subnets into the tunnel, TCP and UDP</h3>
+<p>The hub is found by IP, there is no domain, so IP rules are required. Create a rule to the foreign node with Network = "TCP and UDP" and paste the subnets. The three most common:</p>
+<pre><code>18.192.0.0/13
+52.208.0.0/13
+51.20.0.0/15</code></pre>
+<p>Hubs rotate between regions, so it is safer to paste the full list of AWS EC2 subnets in Europe. It is built from Amazon's official <span class="mono">ip-ranges.json</span> and collapsed to 285 lines:</p>
+<details>
+<summary>Full list: 285 AWS EC2 subnets, eu-* regions</summary>
+<pre><code>1.178.7.0/24
+1.178.10.0/24
+1.178.17.0/24
+1.178.21.0/24
+1.178.22.0/24
+1.178.90.0/24
+1.178.93.0/24
+1.178.94.0/24
+1.178.174.0/24
+3.2.70.0/23
+3.2.72.0/24
+3.2.79.0/24
+3.2.83.0/24
+3.2.84.0/24
+3.2.89.0/24
+3.2.93.0/24
+3.2.97.0/24
+3.2.109.0/24
+3.2.110.0/23
+3.2.112.0/22
+3.5.32.0/22
+3.5.52.0/22
+3.5.64.0/21
+3.5.72.0/22
+3.5.94.0/23
+3.5.96.0/22
+3.5.120.0/22
+3.5.126.0/23
+3.5.134.0/23
+3.5.136.0/22
+3.5.204.0/22
+3.5.216.0/22
+3.5.224.0/22
+3.5.244.0/22
+3.5.248.0/22
+3.8.0.0/14
+3.40.0.0/16
+3.41.0.0/17
+3.64.0.0/12
+3.120.0.0/13
+3.248.0.0/13
+5.60.96.0/19
+13.36.0.0/14
+13.40.0.0/14
+13.48.0.0/14
+13.53.0.0/16
+13.60.0.0/14
+13.134.0.0/15
+13.154.0.0/16
+13.160.0.0/16
+15.129.8.0/21
+15.129.29.0/24
+15.129.31.0/24
+15.129.36.0/23
+15.129.74.0/23
+15.129.78.0/24
+15.129.80.0/22
+15.145.0.0/22
+15.145.4.0/23
+15.145.8.0/21
+15.145.16.0/21
+15.145.24.0/23
+15.160.0.0/15
+15.177.68.0/23
+15.177.72.0/24
+15.177.74.0/23
+15.177.78.0/24
+15.177.89.0/24
+15.177.90.0/24
+15.177.97.0/24
+15.177.98.0/24
+15.188.0.0/16
+15.193.4.0/23
+15.193.140.0/22
+15.193.144.0/21
+15.193.152.0/22
+15.216.0.0/15
+15.220.48.0/21
+15.220.64.0/20
+15.220.144.0/23
+15.220.148.0/22
+15.220.152.0/21
+15.220.168.0/21
+15.224.0.0/16
+15.236.0.0/15
+16.15.12.0/22
+16.15.20.0/22
+16.16.0.0/16
+16.18.0.0/15
+16.22.0.0/16
+16.60.0.0/14
+16.168.0.0/14
+16.192.0.0/16
+16.214.16.0/20
+18.89.0.0/18
+18.96.32.0/19
+18.96.192.0/19
+18.97.192.0/18
+18.98.64.0/19
+18.98.160.0/19
+18.98.224.0/19
+18.99.96.0/20
+18.99.208.0/20
+18.100.0.0/15
+18.102.0.0/16
+18.130.0.0/16
+18.132.0.0/14
+18.153.0.0/16
+18.156.0.0/14
+18.168.0.0/14
+18.175.0.0/16
+18.184.0.0/15
+18.192.0.0/13
+18.200.0.0/14
+23.254.30.0/23
+34.240.0.0/12
+35.42.0.0/15
+35.44.0.0/15
+35.50.192.0/22
+35.50.196.0/23
+35.54.44.0/22
+35.54.52.0/24
+35.54.61.0/24
+35.55.16.0/21
+35.55.24.0/24
+35.55.40.0/23
+35.55.42.0/24
+35.71.72.0/22
+35.71.98.0/24
+35.71.101.0/24
+35.71.105.0/24
+35.71.111.0/24
+35.71.113.0/24
+35.71.120.0/23
+35.152.0.0/16
+35.156.0.0/14
+35.176.0.0/14
+35.180.0.0/15
+37.203.157.0/24
+40.180.0.0/15
+46.51.128.0/18
+46.51.192.0/20
+46.137.0.0/17
+46.137.128.0/18
+51.0.64.0/18
+51.20.0.0/15
+51.24.0.0/16
+51.34.0.0/16
+51.44.0.0/15
+51.48.0.0/15
+51.92.0.0/16
+51.94.0.0/15
+51.96.0.0/16
+51.102.0.0/16
+51.118.0.0/16
+51.200.0.0/14
+52.16.0.0/14
+52.28.0.0/14
+52.46.184.0/22
+52.47.0.0/16
+52.48.0.0/14
+52.56.0.0/14
+52.94.146.0/24
+52.94.248.16/28
+52.94.248.112/28
+52.94.248.192/28
+52.94.249.32/27
+52.94.249.128/28
+52.94.249.240/28
+52.94.250.0/28
+52.95.224.0/24
+52.95.227.0/24
+52.95.239.0/24
+52.95.244.0/24
+52.95.248.0/24
+52.95.253.0/24
+52.95.254.0/24
+52.95.255.64/28
+52.95.255.128/28
+52.208.0.0/13
+54.72.0.0/14
+54.76.0.0/15
+54.78.0.0/16
+54.93.0.0/16
+54.154.0.0/15
+54.170.0.0/15
+54.194.0.0/15
+54.216.0.0/15
+54.220.0.0/16
+54.228.0.0/15
+54.246.0.0/15
+56.228.0.0/16
+63.32.0.0/14
+63.176.0.0/12
+63.246.112.0/23
+64.66.138.0/23
+64.66.141.0/24
+64.66.144.0/24
+64.66.147.0/24
+64.66.154.0/24
+64.66.158.0/24
+64.66.160.0/24
+64.73.201.0/24
+64.252.82.0/23
+64.252.84.0/22
+64.252.88.0/23
+64.252.114.0/23
+64.252.116.0/23
+64.252.126.0/24
+66.36.3.0/24
+66.36.4.0/23
+66.36.8.0/24
+70.232.124.0/22
+75.45.128.0/18
+79.125.0.0/17
+83.119.128.0/18
+86.112.0.0/15
+89.60.0.0/15
+96.0.24.0/21
+96.0.32.0/22
+99.10.0.0/18
+99.77.55.0/30
+99.77.55.12/30
+99.77.55.24/30
+99.77.55.32/28
+99.77.55.49/32
+99.77.55.50/31
+99.77.55.52/30
+99.77.55.56/32
+99.77.55.253/32
+99.77.55.254/31
+99.77.133.0/24
+99.77.134.0/23
+99.77.136.0/23
+99.77.138.0/24
+99.77.155.0/24
+99.77.156.0/22
+99.77.245.0/24
+99.77.246.0/23
+99.77.248.0/23
+99.77.250.0/24
+99.80.0.0/15
+99.150.16.0/21
+99.150.40.0/21
+99.150.64.0/20
+99.150.80.0/21
+99.151.64.0/21
+99.151.80.0/20
+99.151.188.0/23
+99.200.0.0/13
+108.128.0.0/13
+136.18.142.0/23
+151.148.34.0/23
+151.148.41.0/24
+162.213.232.0/22
+173.83.196.0/23
+173.83.206.0/23
+173.83.208.0/24
+173.83.214.0/23
+173.83.216.0/24
+173.83.220.0/24
+173.83.223.0/24
+176.34.64.0/18
+176.34.128.0/17
+185.48.120.0/22
+195.17.0.0/24
+208.78.132.0/23
+208.78.135.0/24
+208.86.90.0/23
+216.39.136.0/21
+216.39.152.0/21
+216.198.196.0/22
+216.198.200.0/21
+216.198.208.0/22
+216.198.212.0/23
+216.198.228.0/23
+216.198.230.0/24
+216.198.238.0/23
+216.198.244.0/22
+216.198.248.0/23
+216.244.9.0/24
+216.244.10.0/23
+216.244.14.0/23
+216.244.16.0/21
+216.244.38.0/23</code></pre>
+</details>
+<p>In Passwall 2 also check: Forwarding Settings → TCP Redir Ports and UDP Redir Ports = All.</p>
+
+<h3>Step 4. The node must carry UDP</h3>
+<div class="note warn"><p><strong>The main trap.</strong> "Whitelist" nodes (VLESS + WebSocket through a Russian front relay with SNI spoofing) carry TCP but not UDP. With such a node steps 1–3 are done, sign-in works, and the hub still gives 3013. Check the node with the STUN test from section 7 before hunting for a mistake in the rules. If UDP does not pass, you need a different node: direct VLESS Reality, Hysteria2, TUIC, WireGuard or AmneziaWG.</p></div>
+
+<h3>Result on a real setup</h3>
+<p>After the four steps the log showed <code>Found lobby, joining...</code>, <code>Joined lobby</code>, and entry into the hub. Zero sign-in errors, zero revocation errors. Tunnel exit in Sweden, hub in Stockholm, playable ping.</p>
+
+<h2>6. Other options on the PC <span class="tag a">not tested</span></h2>
+<p>If you have no router with a proxy and zapret did not solve cause C, the UDP bypass has to run on the PC itself. The regular Cloudflare WARP client <strong>does not work</strong>: both of its protocols, MASQUE and WireGuard, are blocked (verified: it fails to connect on every port).</p>
+<p>The working option from community guides: AmneziaVPN with a WARP config over AmneziaWG obfuscation (the config is generated on warpgen.net or similar). I did not test this path myself, but it is the one described in the current Steam guides for 3013. After connecting, run the STUN test from section 7: the first line must become REPLY. Any other VPN client on the PC will do under the same condition: it must carry UDP, and its server must be able to reach AWS.</p>
+
+<h2>7. Checks without launching the game</h2>
+<p>Three checks, one per cause. Run in PowerShell.</p>
+
+<h3>Cause A: TLS to the auth server</h3>
+<p>Healthy: <span class="mono">code=404</span> in under a second. Broken: <span class="mono">code=000</span> after 15–60 seconds.</p>
+<pre><code>curl.exe -4 -s -o NUL -m 30 -w "auth: code=%{http_code} time=%{time_total}s`n" https://bsp-auth-prod.atoma.cloud/</code></pre>
+
+<h3>Cause B: Amazon revocation servers</h3>
+<p>Healthy: <span class="mono">code=200</span> in a fraction of a second.</p>
+<pre><code>curl.exe -4 -s -o NUL -m 12 -w "amazontrust: code=%{http_code} time=%{time_total}s`n" http://ocsp.r2m02.amazontrust.com/</code></pre>
+
+<h3>Cause C: UDP to AWS</h3>
+<p>Save as <span class="mono">stun_test.ps1</span> and run <span class="mono">powershell -ExecutionPolicy Bypass -File stun_test.ps1</span>. The first line checks UDP to a server in AWS Frankfurt over the same path the game uses to find the hub. The second is a control against a non-AWS server: if that one is silent too, UDP is cut entirely.</p>
+<pre><code>$targets = @(@('18.156.18.145',3478,'AWS eu-central-1'), @('46.225.95.169',3478,'Hetzner DE, control'))
+foreach ($t in $targets) {
+  $ip,$port,$name = $t
+  $u = New-Object System.Net.Sockets.UdpClient
+  $u.Client.ReceiveTimeout = 4000
+  $u.Connect($ip, $port)
+  $b = [byte[]](0,1,0,0,0x21,0x12,0xA4,0x42) + [byte[]](1..12)
+  [void]$u.Send($b, $b.Length)
+  $ep = New-Object System.Net.IPEndPoint([System.Net.IPAddress]::Any, 0)
+  try   { $r = $u.Receive([ref]$ep); Write-Host ("{0,-24} {1}:{2}  REPLY {3} bytes" -f $name,$ip,$port,$r.Length) }
+  catch { Write-Host ("{0,-24} {1}:{2}  NO REPLY" -f $name,$ip,$port) }
+  finally { $u.Close() }
+}</code></pre>
+<p>This is a STUN request: the server simply answers with where it sees you from. If the AWS line says REPLY, the hub will connect.</p>
+
+<h2>8. What does not help</h2>
+<ul>
+  <li><strong>The Cloudflare WARP client.</strong> Blocked at the protocol level, does not connect.</li>
+  <li><strong>ipconfig /flushdns, switching DNS to 8.8.8.8, verifying game files.</strong> The problem is neither DNS nor files: names resolve fine, TLS and UDP are cut on the path.</li>
+  <li><strong>Disabling Nvidia Reflex.</strong> A tip from English-language guides; unrelated to the network cause.</li>
+  <li><strong>Disabling certificate revocation checking in Windows.</strong> Removes cause B but weakens security system-wide. The "amazontrust.com direct" rule does the same with no side effects.</li>
+  <li><strong>Domains only in the proxy list.</strong> The hub is found by IP over UDP; domain rules never match it. Without IP rules and a node that carries UDP, cause C remains.</li>
+</ul>
+
+<footer>Compiled 10–11 September 2026 from game logs and network tests on one PC. ISPs filter differently, your set of causes may differ, so start with section 2. Sources and the zapret archive: <a href="https://github.com/Khamal976/darktide3013">github.com/Khamal976/darktide3013</a>.</footer>
+</div>
+</div>
+
+<script>
+(function(){
+  var strings = {
+    ru: {eyebrow: "Warhammer 40,000: Darktide · Россия · сентябрь 2026", title: "Darktide 3013"},
+    en: {eyebrow: "Warhammer 40,000: Darktide · Russia · September 2026", title: "Darktide 3013"}
+  };
+  function setLang(l){
+    if (!strings[l]) l = "ru";
+    var blocks = document.querySelectorAll(".lang");
+    for (var i=0;i<blocks.length;i++){ blocks[i].hidden = blocks[i].getAttribute("data-lang") !== l; }
+    var btns = document.querySelectorAll("[data-setlang]");
+    for (var j=0;j<btns.length;j++){ btns[j].setAttribute("aria-pressed", btns[j].getAttribute("data-setlang") === l ? "true" : "false"); }
+    var eb = document.querySelector("[data-i18n='eyebrow']"); if (eb) eb.textContent = strings[l].eyebrow;
+    document.documentElement.lang = l;
+    try { localStorage.setItem("dt3013-lang", l); } catch(e){}
+  }
+  var btns = document.querySelectorAll("[data-setlang]");
+  for (var k=0;k<btns.length;k++){ btns[k].addEventListener("click", function(){ setLang(this.getAttribute("data-setlang")); }); }
+  var initial = "ru";
+  try { initial = localStorage.getItem("dt3013-lang") || initial; } catch(e){}
+  if (initial === "ru") {
+    try {
+      var nav = (navigator.language || "").toLowerCase();
+      var stored = null; try { stored = localStorage.getItem("dt3013-lang"); } catch(e){}
+      if (!stored && nav && nav.indexOf("ru") !== 0) initial = "en";
+    } catch(e){}
+  }
+  setLang(initial);
+})();
+</script>
 </body>
 </html>
