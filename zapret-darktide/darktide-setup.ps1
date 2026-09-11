@@ -1,5 +1,6 @@
 ﻿# Darktide 3013 setup for zapret-discord-youtube (Flowseal) 1.9+ / 1.10.x
 # Creates darktide*.bat next to every general*.bat and adds the game's domains to the user hostlist.
+# Generated bats self-elevate (auto UAC) and report whether winws actually started.
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $utf8 = New-Object System.Text.UTF8Encoding($false)
@@ -27,8 +28,32 @@ foreach ($d in $domains) { if ($existing -notcontains $d) { $existing += $d; $ad
 [System.IO.File]::WriteAllLines($userList, $existing, $utf8)
 if ($added.Count) { Say ("[lists] added to list-general-user.txt: " + ($added -join ', ')) } else { Say '[lists] list-general-user.txt already has the game domains' }
 
-# 2) darktide*.bat from every general*.bat
+# blocks injected into every generated darktide*.bat
+$elevate = @(
+  'net session >nul 2>&1 && goto :dt_admin_ok',
+  'powershell -NoProfile -Command "Start-Process -Verb RunAs -FilePath ''%~f0''"',
+  'exit /b',
+  ':dt_admin_ok'
+)
+$verify = @(
+  '',
+  'echo.',
+  'ping -n 3 127.0.0.1 >nul',
+  'tasklist /FI "IMAGENAME eq winws.exe" | find /I "winws.exe" >nul && goto :dt_ok',
+  'echo [X] zapret не запустился на этой стратегии.',
+  'echo     Закройте это окно и попробуйте другую: darktide (ALT).bat, ALT2, ALT3 и далее.',
+  'echo.',
+  'pause',
+  'exit /b',
+  ':dt_ok',
+  'echo [OK] zapret работает. Запускайте игру.',
+  'echo     Это окно можно закрыть, защита останется в фоне.',
+  'echo.',
+  'pause'
+)
 $udpProfile = '--filter-udp=35000-36000 --dpi-desync=fake --dpi-desync-any-protocol=1 --dpi-desync-repeats=10 --dpi-desync-fake-unknown-udp="%BIN%stun.bin" --dpi-desync-cutoff=n4 --new ^'
+
+# 2) darktide*.bat from every general*.bat
 $made = 0
 Get-ChildItem -Path $root -Filter 'general*.bat' | ForEach-Object {
   $src = $_.FullName
@@ -37,17 +62,18 @@ Get-ChildItem -Path $root -Filter 'general*.bat' | ForEach-Object {
   if ($text -notmatch '--wf-udp=') { Say ("[skip] " + $_.Name + ": no --wf-udp"); return }
   # a) let winws see the hub ports
   $text = $text -replace '--wf-udp=', '--wf-udp=35000-36000,'
-  # b) first profile: fake STUN before any UDP to the hub ports
+  # b) rebuild line by line: self-elevate, kill previous winws, add STUN-first UDP profile
   $lines = $text -split "`r?`n"
   $out = New-Object System.Collections.Generic.List[string]
-  $inserted = $false
-  $killed = $false
+  $elevated = $false; $killed = $false; $inserted = $false
   foreach ($line in $lines) {
     $out.Add($line)
+    if (-not $elevated -and $line -match '^@echo off') { foreach ($e in $elevate) { $out.Add($e) }; $elevated = $true }
     if (-not $killed -and $line -match '^cd /d "%~dp0"') { $out.Add('tasklist /FI "IMAGENAME eq winws.exe" | find /I "winws.exe" >nul && taskkill /IM winws.exe /F >nul'); $killed = $true }
     if (-not $inserted -and $line -match 'winws\.exe' -and $line -match '--wf-udp=') { $out.Add($udpProfile); $inserted = $true }
   }
   if (-not $inserted) { Say ("[skip] " + $_.Name + ": winws line not found"); return }
+  foreach ($v in $verify) { $out.Add($v) }
   # c) if the strategy has a game-filter UDP profile, use the STUN payload there too (community fix)
   $result = ($out -join "`r`n") -replace 'ACTIVE_GAME_UDP\.bin', 'stun.bin'
   [System.IO.File]::WriteAllText($dst, $result, $utf8)
@@ -56,5 +82,5 @@ Get-ChildItem -Path $root -Filter 'general*.bat' | ForEach-Object {
 }
 Say ''
 Say ("Done: " + $made + " darktide*.bat created.")
-Say 'Next: run darktide.bat as administrator (or the darktide (ALTn).bat matching the strategy that works for you), keep the window open, start the game.'
-Say 'Дальше: запустите darktide.bat от администратора (или darktide (ALTn).bat той стратегии, что работает у вас), не закрывайте окно, запустите игру.'
+Say 'Next: double-click darktide.bat (it asks for admin by itself). It will say [OK] or [X].'
+Say 'Дальше: запустите darktide.bat двойным щелчком (права администратора он запросит сам). В конце он напишет [OK] или [X]. Если [X] — попробуйте darktide (ALT).bat, ALT2 и т.д.'

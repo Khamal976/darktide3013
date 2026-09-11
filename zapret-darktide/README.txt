@@ -7,7 +7,8 @@ Darktide 3013 + zapret  (сборка Flowseal/zapret-discord-youtube 1.9 и н�
        - добавит домены игры в lists\list-general-user.txt;
        - создаст darktide.bat, darktide (ALT).bat, darktide (ALT2).bat ... по одному
          на каждую стратегию general*.bat, которая есть в папке.
-  3. Запустите darktide.bat от имени администратора. Окно не закрывать. Запустите игру.
+  3. Запустите darktide.bat двойным щелчком. Он сам запросит права администратора (UAC)
+     и в конце напишет [OK] или [X]. Запустите игру.
   4. Если 3013 остался, закройте окно и попробуйте darktide (ALT).bat, ALT2, ALT3 ...
      Стратегия подбирается под провайдера так же, как для YouTube и Discord:
      если у вас работает general (ALT11).bat, берите darktide (ALT11).bat.
