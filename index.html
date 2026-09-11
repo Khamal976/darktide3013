@@ -153,18 +153,20 @@ footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);font-si
 </table>
 </div>
 
-<h2 id="zapret">4. Самое простое: готовый файл для zapret <span class="tag a">причина A</span></h2>
-<p>Если у вас уже стоит zapret (сборка <span class="mono">Flowseal/zapret-discord-youtube</span>, версия 1.10.x), то для 3013 <strong>на экране входа</strong> ничего настраивать не надо. Скачайте архив, скопируйте, запустите.</p>
+<h2 id="zapret">4. Самое простое: готовый файл для zapret <span class="tag a">по отчётам игроков работает</span></h2>
+<p>Если у вас уже стоит zapret (сборка <span class="mono">Flowseal/zapret-discord-youtube</span> версии 1.9 или новее), обе главные причины, A и C, закрываются двумя файлами. Ничего редактировать не надо.</p>
 <a class="dl" href="https://khamal976.github.io/darktide3013/zapret-darktide.zip">Скачать zapret-darktide.zip</a>
 <ol>
-  <li>Распакуйте архив.</li>
-  <li>Файл <span class="mono">darktide.bat</span> положите в папку zapret, рядом с <span class="mono">general.bat</span>.</li>
-  <li>Два файла из папки <span class="mono">lists</span> положите в папку <span class="mono">zapret\lists</span>.</li>
-  <li>Запустите <span class="mono">darktide.bat</span> от имени администратора и не закрывайте окно.</li>
-  <li>Запустите игру.</li>
+  <li>Распакуйте архив. Файлы <span class="mono">darktide-setup.bat</span> и <span class="mono">darktide-setup.ps1</span> положите в папку zapret, рядом с <span class="mono">general.bat</span>.</li>
+  <li>Запустите <span class="mono">darktide-setup.bat</span> двойным щелчком. Он добавит домены игры в <span class="mono">lists\list-general-user.txt</span> и создаст <span class="mono">darktide.bat</span>, <span class="mono">darktide (ALT).bat</span>, <span class="mono">darktide (ALT2).bat</span> и так далее, по одному на каждую стратегию из папки.</li>
+  <li>Запустите <span class="mono">darktide.bat</span> от имени администратора, окно не закрывайте, запустите игру.</li>
+  <li>Если 3013 остался, закройте окно и берите следующий: <span class="mono">darktide (ALT).bat</span>, <span class="mono">ALT2</span>, <span class="mono">ALT3</span> и далее. Стратегия подбирается под провайдера так же, как для YouTube. Если у вас работает <span class="mono">general (ALT11).bat</span>, берите <span class="mono">darktide (ALT11).bat</span>.</li>
 </ol>
-<p>Внутри: та же стратегия, что в <span class="mono">general.bat</span> (YouTube и Discord продолжат работать), плюс правило для доменов игры и правило для UDP-портов хабов. Если на экране входа всё равно 3013, стратегию нужно подобрать под провайдера: закройте <span class="mono">darktide.bat</span>, добавьте строки <span class="mono">atoma.cloud</span> и <span class="mono">atoma-discovery.com</span> в <span class="mono">lists\list-general-user.txt</span> и перебирайте <span class="mono">general (ALT).bat</span>, <span class="mono">ALT2</span>, <span class="mono">ALT3</span> из сборки.</p>
-<div class="note warn"><p><strong>Честное ограничение.</strong> zapret обманывает DPI, но не может провести пакет туда, куда его не пускают по адресу. Для 3013 <strong>после выбора персонажа</strong> (причина C) UDP-правило в файле есть, но сработает ли оно у вашего провайдера, заранее не известно: проверка ещё идёт, результат появится здесь. Если после запуска <span class="mono">darktide.bat</span> в лог по-прежнему пишется <code>Found no lobby</code>, zapret тут бессилен и нужен VPN с поддержкой UDP, см. разделы 5 и 6.</p></div>
+<h3>Что делает правка и почему это работает</h3>
+<p>Каждый <span class="mono">darktide*.bat</span> это копия соответствующего <span class="mono">general*.bat</span> с тремя отличиями. Порты 35000–36000, на которых живут хаб- и игровые серверы Darktide, добавлены в перехват UDP. Первым профилем стоит правило: перед первыми пакетами игры на эти порты zapret отправляет поддельный STUN-запрос (<span class="mono">bin\stun.bin</span>). И в профиле Game Filter, если он есть в стратегии, фейк <span class="mono">ACTIVE_GAME_UDP.bin</span> заменён на тот же <span class="mono">stun.bin</span>.</p>
+<p>Смысл в том, как ТСПУ классифицирует UDP-поток: по первому пакету. Неизвестный UDP до заблокированного хостинга AWS он режет, а поток, который начинается со STUN, считает голосовым звонком и пропускает, потому что иначе ломались бы все мессенджеры. Ровно так zapret чинит голос в Discord. Фейк <span class="mono">ACTIVE_GAME_UDP.bin</span>, который раньше выручал в играх, к сентябрю 2026 перестал проходить, а STUN проходит.</p>
+<p>Замена <span class="mono">ACTIVE_GAME_UDP.bin</span> на <span class="mono">stun.bin</span> это находка игрока Арадиэла из <a href="https://steamcommunity.com/app/1361210/discussions/0/565912359496984390/">обсуждения в Steam</a>: у него заработало 11.09.2026 на стратегии ALT11 с включённым Game Filter (TCP и UDP). Архив выше делает то же самое автоматически и не требует включать Game Filter, потому что правило для портов игры добавлено отдельно.</p>
+<div class="note"><p><strong>Статус.</strong> Механика подтверждена отчётами игроков, файлы из архива проверены на генерацию, но полный цикл «прямой путь через провайдера + darktide.bat + вход в хаб» на моём ПК ещё не прогнан: у меня AWS идёт через роутер. Как только прогоню, отметка сменится на «проверено». Сработало у вас или нет, напишите в тему Steam, какая стратегия и какой провайдер.</p></div>
 
 <h2 id="router">5. Исправление через роутер (OpenWrt + Passwall 2) <span class="tag good">проверено</span></h2>
 <p>Самый надёжный путь: весь обход делает роутер, на ПК ничего не ставится. Схема применима к любому прокси с правилами по доменам и IP (sing-box, xray, HomeProxy, Podkop), названия полей будут отличаться.</p>
@@ -482,7 +484,7 @@ domain:atoma-discovery.com</code></pre>
 <p>После четырёх шагов лог показал <code>Found lobby, joining...</code>, <code>Joined lobby</code>, вход в хаб. Ошибок авторизации и отзыва сертификатов ноль. Выход туннеля в Швеции, хаб в Стокгольме, пинг рабочий.</p>
 
 <h2 id="pc">6. Другие варианты на ПК <span class="tag a">не проверено</span></h2>
-<p>Если роутера с прокси нет, а zapret не вытянул причину C, обход UDP нужно поднять на самом компьютере. Обычный клиент Cloudflare WARP <strong>не работает</strong>: оба его протокола, MASQUE и WireGuard, блокируются (проверено, подключение не устанавливается ни на одном порту).</p>
+<p>Если роутера с прокси нет, а zapret из раздела 4 не вытянул причину C ни на одной стратегии, обход UDP нужно поднять на самом компьютере. Обычный клиент Cloudflare WARP <strong>не работает</strong>: оба его протокола, MASQUE и WireGuard, блокируются (проверено, подключение не устанавливается ни на одном порту).</p>
 <p>Рабочий вариант из гайдов сообщества: AmneziaVPN с конфигом WARP через AmneziaWG-обфускацию (конфиг генерируется на warpgen.net или аналогах). Этот путь мной не проверялся, но именно он описан в актуальных Steam-гайдах по 3013. После подключения прогоните STUN-тест из раздела 7: первая строка должна стать REPLY. Любой другой VPN-клиент на ПК подойдёт при том же условии: он должен пропускать UDP, и его сервер должен дотягиваться до AWS.</p>
 
 <h2 id="check">7. Проверка без запуска игры</h2>
@@ -588,18 +590,20 @@ foreach ($t in $targets) {
 </table>
 </div>
 
-<h2>4. Easiest: a drop-in file for zapret <span class="tag a">cause A</span></h2>
-<p>If you already run zapret (the <span class="mono">Flowseal/zapret-discord-youtube</span> build, version 1.10.x), there is nothing to configure for 3013 <strong>on the login screen</strong>. Download, copy, run.</p>
+<h2>4. Easiest: a drop-in file for zapret <span class="tag a">works per player reports</span></h2>
+<p>If you already run zapret (the <span class="mono">Flowseal/zapret-discord-youtube</span> build, version 1.9 or newer), both main causes, A and C, are closed by two files. Nothing to edit.</p>
 <a class="dl" href="https://khamal976.github.io/darktide3013/zapret-darktide.zip">Download zapret-darktide.zip</a>
 <ol>
-  <li>Unpack the archive.</li>
-  <li>Put <span class="mono">darktide.bat</span> into the zapret folder, next to <span class="mono">general.bat</span>.</li>
-  <li>Put the two files from <span class="mono">lists</span> into <span class="mono">zapret\lists</span>.</li>
-  <li>Run <span class="mono">darktide.bat</span> as administrator and keep the window open.</li>
-  <li>Launch the game.</li>
+  <li>Unpack the archive. Put <span class="mono">darktide-setup.bat</span> and <span class="mono">darktide-setup.ps1</span> into the zapret folder, next to <span class="mono">general.bat</span>.</li>
+  <li>Double-click <span class="mono">darktide-setup.bat</span>. It adds the game's domains to <span class="mono">lists\list-general-user.txt</span> and creates <span class="mono">darktide.bat</span>, <span class="mono">darktide (ALT).bat</span>, <span class="mono">darktide (ALT2).bat</span> and so on, one per strategy in the folder.</li>
+  <li>Run <span class="mono">darktide.bat</span> as administrator, keep the window open, launch the game.</li>
+  <li>If 3013 persists, close the window and take the next one: <span class="mono">darktide (ALT).bat</span>, <span class="mono">ALT2</span>, <span class="mono">ALT3</span> and so on. The strategy has to match your ISP, exactly as for YouTube. If <span class="mono">general (ALT11).bat</span> works for you, use <span class="mono">darktide (ALT11).bat</span>.</li>
 </ol>
-<p>Inside: the same strategy as <span class="mono">general.bat</span> (YouTube and Discord keep working), plus a rule for the game's domains and a rule for the hub UDP ports. If the login screen still gives 3013, the strategy has to match your ISP: close <span class="mono">darktide.bat</span>, add <span class="mono">atoma.cloud</span> and <span class="mono">atoma-discovery.com</span> to <span class="mono">lists\list-general-user.txt</span>, and try <span class="mono">general (ALT).bat</span>, <span class="mono">ALT2</span>, <span class="mono">ALT3</span> from the build.</p>
-<div class="note warn"><p><strong>Honest limitation.</strong> zapret fools DPI; it cannot carry a packet to an address that is blocked outright. For 3013 <strong>after character select</strong> (cause C) the file does include a UDP rule, but whether it works on your ISP is not known yet: testing is in progress and the result will be posted here. If <code>Found no lobby</code> still appears in the log with <span class="mono">darktide.bat</span> running, zapret cannot help and you need a VPN that carries UDP, see sections 5 and 6.</p></div>
+<h3>What the change does and why it works</h3>
+<p>Each <span class="mono">darktide*.bat</span> is a copy of the matching <span class="mono">general*.bat</span> with three differences. Ports 35000–36000, where Darktide's hub and game servers live, are added to the UDP capture. The first profile is a rule that sends a fake STUN request (<span class="mono">bin\stun.bin</span>) ahead of the game's first packets to those ports. And in the Game Filter profile, where the strategy has one, the <span class="mono">ACTIVE_GAME_UDP.bin</span> fake is replaced with the same <span class="mono">stun.bin</span>.</p>
+<p>The point is how the Russian DPI (TSPU) classifies a UDP flow: by its first packet. Unknown UDP to blocked AWS hosting gets dropped, but a flow that starts with STUN is treated as a voice call and let through, because otherwise every messenger would break. This is exactly how zapret fixes Discord voice. The <span class="mono">ACTIVE_GAME_UDP.bin</span> fake that used to rescue games stopped passing by September 2026; STUN still passes.</p>
+<p>Swapping <span class="mono">ACTIVE_GAME_UDP.bin</span> for <span class="mono">stun.bin</span> is a find by the player Aradiel in the <a href="https://steamcommunity.com/app/1361210/discussions/0/565912359496984390/">Steam discussion</a>: it worked for them on 11 Sep 2026 with strategy ALT11 and Game Filter (TCP and UDP) enabled. The archive above does the same automatically and does not require enabling Game Filter, because the rule for the game's ports is added separately.</p>
+<div class="note"><p><strong>Status.</strong> The mechanism is confirmed by player reports and the archive's output is verified, but the full cycle "direct ISP path + darktide.bat + entering the hub" has not been run on my PC yet: my AWS traffic goes through the router. Once it is, this tag becomes "verified". Whether it worked for you or not, post your strategy and ISP in the Steam thread.</p></div>
 
 <h2>5. Fix on the router (OpenWrt + Passwall 2) <span class="tag good">verified</span></h2>
 <p>The most reliable path: the router does all the bypassing, nothing is installed on the PC. The scheme applies to any proxy with domain and IP rules (sing-box, xray, HomeProxy, Podkop); field names will differ.</p>
@@ -917,7 +921,7 @@ domain:atoma-discovery.com</code></pre>
 <p>After the four steps the log showed <code>Found lobby, joining...</code>, <code>Joined lobby</code>, and entry into the hub. Zero sign-in errors, zero revocation errors. Tunnel exit in Sweden, hub in Stockholm, playable ping.</p>
 
 <h2>6. Other options on the PC <span class="tag a">not tested</span></h2>
-<p>If you have no router with a proxy and zapret did not solve cause C, the UDP bypass has to run on the PC itself. The regular Cloudflare WARP client <strong>does not work</strong>: both of its protocols, MASQUE and WireGuard, are blocked (verified: it fails to connect on every port).</p>
+<p>If you have no router with a proxy and zapret from section 4 did not solve cause C on any strategy, the UDP bypass has to run on the PC itself. The regular Cloudflare WARP client <strong>does not work</strong>: both of its protocols, MASQUE and WireGuard, are blocked (verified: it fails to connect on every port).</p>
 <p>The working option from community guides: AmneziaVPN with a WARP config over AmneziaWG obfuscation (the config is generated on warpgen.net or similar). I did not test this path myself, but it is the one described in the current Steam guides for 3013. After connecting, run the STUN test from section 7: the first line must become REPLY. Any other VPN client on the PC will do under the same condition: it must carry UDP, and its server must be able to reach AWS.</p>
 
 <h2>7. Checks without launching the game</h2>
