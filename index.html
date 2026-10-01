@@ -1,14 +1,15 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="ru">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Ошибка 3013 в Warhammer 40,000: Darktide из России: три причины под одним кодом, диагностика по логу, готовый файл для zapret, исправление через роутер (OpenWrt + Passwall 2). Darktide error 3013 from Russia: causes, log diagnosis, zapret drop-in, router fix.">
-<meta name="color-scheme" content="light dark">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="Darktide: диагностика входа, подключения к хабу и разрывов сессии. Актуальные домены atoma.cloud, atoma-discovery.com и fatshark.services; zapret и OpenWrt/PassWall 2. Darktide sign-in, hub connection and session troubleshooting." name="description"/>
+<meta content="light dark" name="color-scheme"/>
 <style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Darktide 3013</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600&amp;family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
 <style>
 :root{
   --bg:#f3efe7; --bg-2:#e9e3d6; --ink:#1d1a15; --ink-2:#5a5347; --ink-3:#8a8172;
@@ -83,117 +84,105 @@ footer{margin-top:56px;padding-top:16px;border-top:1px solid var(--line);font-si
 <body>
 <div class="wrap">
 <div class="topbar">
-  <div class="eyebrow" data-i18n="eyebrow">Warhammer 40,000: Darktide · Россия · сентябрь 2026</div>
-  <div class="langsw" role="group" aria-label="Language">
-    <button type="button" data-setlang="ru" aria-pressed="true">RU</button>
-    <button type="button" data-setlang="en" aria-pressed="false">EN</button>
-  </div>
+<div class="eyebrow" data-i18n="eyebrow">Warhammer 40,000: Darktide · Россия · октябрь 2026</div>
+<div aria-label="Language" class="langsw" role="group">
+<button aria-pressed="true" data-setlang="ru" type="button">RU</button>
+<button aria-pressed="false" data-setlang="en" type="button">EN</button>
 </div>
-
+</div>
 <!-- ======================= RU ======================= -->
 <div class="lang" data-lang="ru">
 <header>
-  <h1>Ошибка 3013: три причины под одним кодом и как их чинить</h1>
-  <p class="lede">Код 3013 игра выдаёт на любой сетевой сбой между авторизацией и входом в хаб. Под ним у игроков из России прячутся три разные поломки, и лечатся они по-разному. Ниже: как по логу узнать свою, и что делать с каждой.</p>
-  <div class="meta">Разбор сделан на реальном ПК (Windows 11, Steam, роутер OpenWrt с Passwall 2). Всё, что помечено «проверено», воспроизведено и подтверждено логом игры. Остальное собрано из гайдов сообщества и не проверялось.</div>
+<h1>Ошибка 3013: причины, диагностика и исправление</h1>
+<p class="lede">Не определяйте причину только по номеру ошибки. Разделяйте отказ входа, неудачное подключение к хабу и разрыв уже установленной игровой сессии. Ниже — признаки в логе и настройка обхода для каждого этапа.</p>
+<div class="meta">Разбор сделан на реальном ПК (Windows 11, Steam, роутер OpenWrt с Passwall 2). Всё, что помечено «проверено», воспроизведено и подтверждено логом игры. Остальное собрано из гайдов сообщества и не проверялось.</div>
 </header>
-
-<nav class="toc" aria-label="Содержание">
+<nav aria-label="Содержание" class="toc">
 <ol>
-  <li><a href="#what">Что на самом деле стоит за 3013</a></li>
-  <li><a href="#diag">Определяем свою причину по логу</a></li>
-  <li><a href="#hosts">Куда ходит игра</a></li>
-  <li><a href="#zapret">Самое простое: готовый файл для zapret</a></li>
-  <li><a href="#router">Исправление через роутер (OpenWrt + Passwall 2)</a></li>
-  <li><a href="#pc">Другие варианты на ПК</a></li>
-  <li><a href="#check">Проверка без запуска игры</a></li>
-  <li><a href="#no">Что не помогает</a></li>
+<li><a href="#what">Что на самом деле стоит за 3013</a></li>
+<li><a href="#diag">Определяем свою причину по логу</a></li>
+<li><a href="#hosts">Куда ходит игра</a></li>
+<li><a href="#zapret">Самое простое: готовый файл для zapret</a></li>
+<li><a href="#router">Исправление через роутер (OpenWrt + Passwall 2)</a></li>
+<li><a href="#pc">Другие варианты на ПК</a></li>
+<li><a href="#check">Проверка без запуска игры</a></li>
+<li><a href="#no">Что не помогает</a></li>
 </ol>
 </nav>
-
 <h2 id="what">1. Что на самом деле стоит за 3013</h2>
-<p>Игра проходит три сетевых этапа, и любой из них может сорваться в 3013.</p>
-
-<div class="cause"><span class="k">Причина A</span><span><strong>Авторизация не доходит до сервера.</strong> Серверы Fatshark (<span class="mono">*.atoma.cloud</span>) живут на AWS CloudFront. Провайдер пропускает TCP, но режет TLS-рукопожатие к CloudFront: соединение зависает на 60 секунд и обрывается. Симптом: 3013 сразу на экране входа.</span></div>
-<div class="cause"><span class="k">Причина B</span><span><strong>Windows не может проверить сертификат сервера.</strong> Перед TLS Windows ходит за списками отзыва на <span class="mono">*.amazontrust.com</span> по обычному HTTP. Если этот трафик завёрнут в VPN-туннель, который до Amazon не дотягивается, авторизация падает с ошибкой отзыва. Симптом: вход проходит «со второго-третьего раза», иногда вообще нет. Без VPN эта причина не возникает.</span></div>
+<p>Здесь рассмотрены несколько сетевых причин. Коды в интерфейсе и названия ошибок в console-логе могут различаться: читайте последнюю успешно пройденную стадию и причину отказа.</p>
+<div class="cause"><span class="k">Причина A</span><span><strong>Соединение со службой входа или backend не устанавливается вовремя.</strong> Исторически наблюдался TLS-тайм-аут Schannel; в новых логах также есть Connection timed out. Это симптом соединения, не автоматическое доказательство фильтрации CloudFront. Текущий identity-endpoint — <span class="mono">login.shr-prod-identity.fatshark.services</span>.</span></div>
+<div class="cause"><span class="k">Причина B</span><span><strong>Не выполнена проверка отзыва сертификата.</strong> Эту ветку проверяйте при явной <span class="mono">CRYPT_E_REVOCATION_OFFLINE</span>. В исторической конфигурации помогал прямой маршрут Amazon Trust. В последнем логе этой сигнатуры нет; правило Direct не является универсальным требованием для любых сетей.</span></div>
 <div class="cause"><span class="k">Причина C</span><span><strong>Не доходит UDP до хаб-сервера.</strong> После выбора персонажа игра ищет сервер Морнингстара по голому IP на UDP-порту 355xx. Сервера стоят в AWS (Франкфурт, Ирландия, Стокгольм), и UDP до них из России не проходит. Симптом: экран выбора персонажа открывается, а после выбора всегда 3013.</span></div>
-
-<div class="note"><p>Причины накладываются. Обычно сначала видно A, после её лечения проявляется B, после B остаётся C. Поэтому «исправил, а 3013 всё равно» чаще всего значит, что вылечена не та причина.</p></div>
-
+<div class="note"><p>Причины могут накладываться. После завершения входа отдельно проверяйте подключение к игровому серверу и удержание сессии. DNS исключён автором как причина текущего сбоя; смена резолвера и очистка кэша не предлагаются как его исправление.</p></div>
 <div class="note warn"><p><strong>Блокировка мигает.</strong> Фильтрация UDP до AWS то включается, то пропадает: у одного и того же провайдера в один день игра заходит сама, на следующий снова 3013. Это подтверждено прямым замером с одного ПК: 9–10 сентября UDP до AWS не проходил вообще, 11 сентября тот же тест пошёл напрямую, без обхода. Отсюда два вывода. Если 3013 «сам прошёл», не удаляйте обход, он понадобится, когда блок вернётся. И наоборот, если ничего не помогает, имеет смысл просто попробовать позже: возможно, поймали активную фазу.</p></div>
-
 <h2 id="diag">2. Определяем свою причину по логу</h2>
 <p>Игра пишет подробный лог. Откройте папку (вставьте путь в адресную строку проводника):</p>
 <pre><code>%APPDATA%\Fatshark\Darktide\console_logs</code></pre>
 <p>Возьмите самый свежий файл <span class="mono">console-ГГГГ-ММ-ДД-….log</span> и найдите в нём строки из таблицы. Ищите по короткому фрагменту, он выделен.</p>
-
 <div class="tablewrap">
 <table>
 <thead><tr><th>Строка в логе</th><th>Причина</th><th>Что значит</th></tr></thead>
 <tbody>
-<tr><td><code>schannel: timed out sending data (bytes sent: 0)</code><br>рядом с <code>Auth operation 1 error</code></td><td><span class="tag bad">A</span></td><td>TLS к серверу авторизации не устанавливается: провайдер душит CloudFront.</td></tr>
+<tr><td><code>schannel: timed out sending data (bytes sent: 0)</code><br/>рядом с <code>Auth operation 1 error</code></td><td><span class="tag bad">A</span></td><td>TLS/передача Schannel не завершились вовремя. Проверяйте маршрут и окружающие строки, не назначая виновника только по этой сигнатуре.</td></tr>
 <tr><td><code>CRYPT_E_REVOCATION_OFFLINE (0x80092013)</code></td><td><span class="tag bad">B</span></td><td>Windows не достучалась до серверов отзыва сертификатов Amazon.</td></tr>
-<tr><td><code>Searching for WAN lobby on 52.208.x.x:35560</code><br>затем через 3 секунды <code>Found no lobby, search finished.</code><br>и <code>failed_found_no_lobby</code></td><td><span class="tag bad">C</span></td><td>UDP-пакеты до хаб-сервера не дошли или не вернулись.</td></tr>
-<tr><td><code>Found lobby, joining...</code> → <code>Joined lobby</code> → <code>Mechanism hub changing state init_hub -&gt; in_hub</code></td><td><span class="tag good">OK</span></td><td>Всё работает, вы в хабе.</td></tr>
-</tbody>
+<tr><td><code>Searching for WAN lobby on 52.208.x.x:35560</code><br/>затем через 3 секунды <code>Found no lobby, search finished.</code><br/>и <code>failed_found_no_lobby</code></td><td><span class="tag bad">C</span></td><td>UDP-пакеты до хаб-сервера не дошли или не вернулись.</td></tr>
+<tr><td><code>Found lobby, joining...</code> → <code>Joined lobby</code> → <code>Mechanism hub changing state init_hub -&gt; in_hub</code></td><td><span class="tag good">OK</span></td><td>Подключение к хабу успешно. Удержание сессии ещё нужно проверить.</td></tr>
+<tr><td><code>name_verification -&gt; done</code></td><td><span class="tag bad">Этап</span></td><td>Вход завершён; последующие ошибки игрового канала — отдельный этап.</td></tr><tr><td><code>timed out waiting for channel accept / failed_joining_lobby</code></td><td><span class="tag bad">Этап</span></td><td>Подключение к выбранному игровому серверу не завершилось.</td></tr><tr><td><code>Channel ... reason pong_timeout</code></td><td><span class="tag bad">Этап</span></td><td>Потеря связи указанного игрового канала, не обязательно HTTPS-backend.</td></tr><tr><td><code>AdaptiveClockHandler ... panic / lost_session</code></td><td><span class="tag bad">Этап</span></td><td>Нарушение синхронизации и потеря игровой сессии. Не доказывает неисправность часов Windows.</td></tr></tbody>
 </table>
-</div>
-
+</div><div class="note"><p>Обновление по логу 1 октября: вход завершился в 18:44:52.666; первый хаб отключился в 18:46:19 с pong_timeout, второй — в 18:49:24–25 после AdaptiveClockHandler panic и lost_session. Затем клиент снова вошёл в хаб. Сообщения Resolving timed out в этом запуске не используются как доказательство DNS-первопричины.</p></div>
 <p>Строки <code>Vivox … Connection Terminated</code> можно не трогать: это голосовой чат, на вход в игру он не влияет.</p>
-
 <h2 id="hosts">3. Куда ходит игра</h2>
 <p>Эти адреса нужно знать, чтобы настроить любой обход. Список собран из логов игры.</p>
 <div class="tablewrap">
 <table>
 <thead><tr><th>Назначение</th><th>Адреса</th><th>Протокол</th></tr></thead>
 <tbody>
-<tr><td>Обнаружение и авторизация</td><td class="mono">bsp-sup-sd.atoma-discovery.com<br>bsp-auth-prod.atoma.cloud</td><td>TCP 443</td></tr>
-<tr><td>Игровой бэкенд, матчмейкинг, CDN</td><td class="mono">bsp-td-prod.atoma.cloud<br>bsp-td-prod-matchmaking.atoma.cloud<br>bsp-cdn-prod.atoma.cloud<br>fr-prod.atoma.cloud</td><td>TCP 443 (HTTPS и gRPC)</td></tr>
-<tr><td>Проверка отзыва сертификатов</td><td class="mono">ocsp.r2m02.amazontrust.com<br>crl.r2m02.amazontrust.com<br>crl.rootca1.amazontrust.com<br>ocsp.rootca1.amazontrust.com</td><td>TCP 80, должен идти напрямую</td></tr>
+<tr><td>Обнаружение и авторизация</td><td class="mono">bsp-sup-sd.atoma-discovery.com<br/>login.shr-prod-identity.fatshark.services</td><td>TCP 443</td></tr>
+<tr><td>Игровой бэкенд, матчмейкинг, CDN</td><td class="mono">bsp-td-prod.atoma.cloud<br/>bsp-td-prod-matchmaking.atoma.cloud<br/>bsp-cdn-prod.atoma.cloud<br/>fr-prod.atoma.cloud<br/>bsp-im-prod.atoma.cloud</td><td>TCP 443 (HTTPS и gRPC)</td></tr>
+<tr><td>Проверка отзыва сертификатов</td><td class="mono">ocsp.r2m02.amazontrust.com<br/>crl.r2m02.amazontrust.com<br/>crl.rootca1.amazontrust.com<br/>ocsp.rootca1.amazontrust.com</td><td>TCP 80; Direct помогал в тесте автора</td></tr>
 <tr><td>Хаб- и игровые серверы</td><td>IP-адреса AWS EC2 в регионах eu-central-1, eu-west-1, eu-north-1 (например 18.192.179.115, 52.208.211.66, 13.61.11.157). Домена нет, только IP.</td><td>UDP 35500–35600</td></tr>
 </tbody>
 </table>
-</div>
-
+</div><div class="note"><p>Для hostlist zapret используйте родительский домен <code>fatshark.services</code>: он охватывает текущий identity-endpoint и другие поддомены. Пишите <code>.services</code> с конечной s, без <code>https://</code> и без <code>*.</code>. Добавление домена исправляет неполный список, но не гарантирует устранение разрывов игрового UDP.</p></div>
 <h2 id="zapret">4. Самое простое: готовый файл для zapret <span class="tag a">по отчётам игроков работает</span></h2>
-<p>Если у вас уже стоит zapret (сборка <span class="mono">Flowseal/zapret-discord-youtube</span> версии 1.9 или новее), обе главные причины, A и C, закрываются двумя файлами. Ничего редактировать не надо.</p>
-<a class="dl" href="https://khamal976.github.io/darktide3013/zapret-darktide.zip">Скачать zapret-darktide.zip</a>
+<p>Если у вас установлен zapret (Flowseal/zapret-discord-youtube), генератор добавляет игровые UDP-порты и создаёт варианты стратегий. Стратегию нужно проверять на своей сети; успешный запуск winws не гарантирует успешный вход или удержание хаба.</p>
+<a class="dl" href="https://khamal976.github.io/darktide3013/zapret-darktide.zip">Скачать zapret-darktide.zip</a><div class="note warn"><p><strong>Обновление списка доменов.</strong> Перед запуском проверьте <code>darktide-setup.ps1</code>. Массив должен выглядеть так:</p><pre><code>$domains = @('atoma.cloud','atoma-discovery.com','fatshark.services')</code></pre><p>Для старого архива замените массив вручную, затем повторно запустите setup. В <code>lists\list-general-user.txt</code> должны быть:</p><pre><code>atoma.cloud
+atoma-discovery.com
+fatshark.services</code></pre><p>Узкую запись <code>login.shr-prod-identity.fatshark.services</code> можно удалить как избыточную. Генератор её автоматически не удаляет. Сохраните вручную изменённые <code>darktide*.bat</code> до перегенерации, затем перезапустите стратегию и игру. Редакция страницы сама по себе не обновляет ZIP по ссылке.</p></div>
 <ol>
-  <li>Распакуйте архив. Файлы <span class="mono">darktide-setup.bat</span> и <span class="mono">darktide-setup.ps1</span> положите в папку zapret, рядом с <span class="mono">general.bat</span>.</li>
-  <li>Запустите <span class="mono">darktide-setup.bat</span> двойным щелчком. Он добавит домены игры в <span class="mono">lists\list-general-user.txt</span> и создаст <span class="mono">darktide.bat</span>, <span class="mono">darktide (ALT).bat</span>, <span class="mono">darktide (ALT2).bat</span> и так далее, по одному на каждую стратегию из папки.</li>
-  <li>Запустите <span class="mono">darktide.bat</span> двойным щелчком, согласитесь на запрос прав администратора (UAC). Откроется окно и останется открытым. Строки вроде <span class="mono">windivert initialized. capture is started.</span> означают, что защита работает: не закрывайте окно и запускайте игру.</li>
-  <li>Если 3013 остался, закройте окно и берите следующий: <span class="mono">darktide (ALT).bat</span>, <span class="mono">ALT2</span>, <span class="mono">ALT3</span> и далее. Стратегия подбирается под провайдера так же, как для YouTube. Если у вас работает <span class="mono">general (ALT11).bat</span>, берите <span class="mono">darktide (ALT11).bat</span>.</li>
+<li>Распакуйте архив. Файлы <span class="mono">darktide-setup.bat</span> и <span class="mono">darktide-setup.ps1</span> положите в папку zapret, рядом с <span class="mono">general.bat</span>.</li>
+<li>Запустите <span class="mono">darktide-setup.bat</span> двойным щелчком. Он добавит домены игры в <span class="mono">lists\list-general-user.txt</span> и создаст <span class="mono">darktide.bat</span>, <span class="mono">darktide (ALT).bat</span>, <span class="mono">darktide (ALT2).bat</span> и так далее, по одному на каждую стратегию из папки.</li>
+<li>Запустите <code>darktide.bat</code> с правами администратора. <code>capture is started</code> подтверждает запуск перехвата, не успешность обхода. Не закрывайте окно во время проверки игры.</li>
+<li>Если 3013 остался, закройте окно и берите следующий: <span class="mono">darktide (ALT).bat</span>, <span class="mono">ALT2</span>, <span class="mono">ALT3</span> и далее. Стратегия подбирается под провайдера так же, как для YouTube. Если у вас работает <span class="mono">general (ALT11).bat</span>, берите <span class="mono">darktide (ALT11).bat</span>.</li>
 </ol>
 <ul>
-  <li><strong>Окно видно, и это правильно.</strong> winws работает в открытом окне, пока оно открыто, защита включена; закрыли окно — выключили. Если вместо строк windivert окно показало <span class="mono">winws has STOPPED</span> и ждёт нажатия, эта стратегия не подошла: закройте и запустите следующую, <span class="mono">darktide (ALT).bat</span>, ALT2, ALT3 и далее. Предыдущий winws файл закрывает сам, так что можно просто запускать следующий. Если не идёт ни одна, перезагрузите ПК и попробуйте снова.</li>
-  <li><strong>Свежая сборка подходит как есть.</strong> Ничего доустанавливать не нужно: генератор использует PowerShell, встроенный в Windows, и файлы самой сборки. Проверено на 1.10.0 и 1.10.2, в сборках старше 1.9 нет <span class="mono">bin\stun.bin</span>.</li>
-  <li><strong>После обновления zapret</strong> новая версия лежит в новой папке, и <span class="mono">darktide*.bat</span> туда не переезжают. Скопируйте в неё те же два файла и запустите <span class="mono">darktide-setup.bat</span> ещё раз.</li>
+<li><strong>Если winws остановился:</strong> прочитайте сообщение об ошибке. <code>winws has STOPPED</code> может означать проблему параметров, прав, драйвера или конфликт — не только неподходящую стратегию. Создаваемые BAT останавливают все <code>winws.exe</code> и выполняют stop/delete службы WinDivert; учитывайте другие работающие экземпляры.</li>
+<li><strong>Свежая сборка подходит как есть.</strong> Ничего доустанавливать не нужно: генератор использует PowerShell, встроенный в Windows, и файлы самой сборки. Проверено на 1.10.0 и 1.10.2, в сборках старше 1.9 нет <span class="mono">bin\stun.bin</span>.</li>
+<li><strong>После обновления zapret</strong> новая версия лежит в новой папке, и <span class="mono">darktide*.bat</span> туда не переезжают. Скопируйте в неё те же два файла и запустите <span class="mono">darktide-setup.bat</span> ещё раз.</li>
 </ul>
 <h3>Что делает правка и почему это работает</h3>
 <p>Каждый <span class="mono">darktide*.bat</span> это копия соответствующего <span class="mono">general*.bat</span> с тремя отличиями. Порты 35000–36000, на которых живут хаб- и игровые серверы Darktide, добавлены в перехват UDP. Первым профилем стоит правило: перед первыми пакетами игры на эти порты zapret отправляет поддельный STUN-запрос (<span class="mono">bin\stun.bin</span>). И в профиле Game Filter, если он есть в стратегии, фейк <span class="mono">ACTIVE_GAME_UDP.bin</span> заменён на тот же <span class="mono">stun.bin</span>.</p>
-<p>Смысл в том, как ТСПУ классифицирует UDP-поток: по первому пакету. Неизвестный UDP до заблокированного хостинга AWS он режет, а поток, который начинается со STUN, считает голосовым звонком и пропускает, потому что иначе ломались бы все мессенджеры. Ровно так zapret чинит голос в Discord. Фейк <span class="mono">ACTIVE_GAME_UDP.bin</span>, который раньше выручал в играх, к сентябрю 2026 перестал проходить, а STUN проходит.</p>
+<p>В отчётах игроков замена игрового fake payload на STUN помогала пройти фильтрацию. Объяснение через классификацию первого пакета DPI — предполагаемый механизм, а не доказанное устройство ТСПУ. Работоспособность зависит от сети и стратегии.</p>
 <p>Замена <span class="mono">ACTIVE_GAME_UDP.bin</span> на <span class="mono">stun.bin</span> это находка игрока Арадиэла из <a href="https://steamcommunity.com/app/1361210/discussions/0/565912359496984390/">обсуждения в Steam</a>: у него заработало 11.09.2026 на стратегии ALT11 с включённым Game Filter (TCP и UDP). Архив выше делает то же самое автоматически и не требует включать Game Filter, потому что правило для портов игры добавлено отдельно.</p>
 <div class="note"><p><strong>Статус.</strong> Механика подтверждена отчётами игроков, файлы из архива проверены на генерацию, но полный цикл «прямой путь через провайдера + darktide.bat + вход в хаб» на моём ПК ещё не прогнан: у меня AWS идёт через роутер. Как только прогоню, отметка сменится на «проверено». Сработало у вас или нет, напишите в тему Steam, какая стратегия и какой провайдер.</p></div>
-
-<h2 id="router">5. Исправление через роутер (OpenWrt + Passwall 2) <span class="tag good">проверено</span></h2>
+<h2 id="router">5. Исправление через роутер (OpenWrt + Passwall 2) <span class="tag good">исторический тест</span></h2>
 <p>Самый надёжный путь: весь обход делает роутер, на ПК ничего не ставится. Схема применима к любому прокси с правилами по доменам и IP (sing-box, xray, HomeProxy, Podkop), названия полей будут отличаться.</p>
-
 <h3>Шаг 1. Домены игры в туннель</h3>
-<p>В правило, которое идёт на зарубежный узел, добавьте домены. Это закрывает причину A.</p>
+<p>Если службы игры должны идти через зарубежный узел, добавьте следующие домены. Проверьте фактический outbound и приоритет исключений; наличие строки само по себе не подтверждает исправление.</p>
 <pre><code>domain:atoma.cloud
-domain:atoma-discovery.com</code></pre>
-
+domain:atoma-discovery.com
+domain:fatshark.services</code></pre>
 <h3>Шаг 2. Amazon Trust напрямую</h3>
 <p>Создайте правило <strong>выше</strong> правила прокси с узлом «Direct Connection» и доменом:</p>
 <pre><code>domain:amazontrust.com</code></pre>
-<p>Это закрывает причину B. Направлять эти хосты через туннель нельзя: с большинства зарубежных узлов они не отвечают, и Windows считает проверку отзыва проваленной.</p>
-
+<p>В исторической конфигурации Direct для Amazon Trust устранял ошибку отзыва. Это не универсальный запрет туннеля: при явной ошибке проверьте доступ к URL фактической цепочки сертификатов через используемый маршрут. В последнем логе явной ошибки отзыва нет.</p>
 <h3>Шаг 3. Подсети AWS в туннель по TCP и UDP</h3>
-<p>Хаб ищется по IP, домена нет, поэтому нужны IP-правила. Создайте правило на зарубежный узел с Network = «TCP и UDP» и вставьте подсети. Три самых частых:</p>
+<p>Хаб ищется по IP:порту; нужны правила для игрового UDP, если его следует направлять через узел. Три исторических примера ниже не являются достаточным списком: они покрывают лишь 1 из 9 уникальных игровых IP логов 29.09–01.10. Полный список ниже покрывает все 9.</p>
 <pre><code>18.192.0.0/13
 52.208.0.0/13
 51.20.0.0/15</code></pre>
-<p>Хабы ротируются между регионами, поэтому надёжнее вставить полный список EC2-подсетей AWS в Европе. Он собран из официального <span class="mono">ip-ranges.json</span> Amazon и схлопнут до 285 строк:</p>
+<p>Ниже сохранён список из 285 подсетей прежней редакции. Его актуальная полнота относительно AWS не проверена, но игровые IP присланных логов покрыты. Если этот список уже применяется, добавлять те же адреса повторно не требуется.</p>
 <details>
 <summary>Полный список: 285 подсетей AWS EC2, регионы eu-*</summary>
 <pre><code>1.178.7.0/24
@@ -483,30 +472,23 @@ domain:atoma-discovery.com</code></pre>
 216.244.38.0/23</code></pre>
 </details>
 <p>В Passwall 2 также проверьте: Forwarding Settings → TCP Redir Ports и UDP Redir Ports = All.</p>
-
 <h3>Шаг 4. Узел обязан пропускать UDP</h3>
-<div class="note warn"><p><strong>Главная ловушка.</strong> Узлы-«whitelist» (VLESS + WebSocket через российский фронт-релей с подменой SNI) пропускают TCP и не пропускают UDP. С таким узлом шаги 1–3 выполнены, авторизация проходит, а хаб всё равно даёт 3013. Проверьте узел STUN-тестом из раздела 7 до того, как искать ошибку в правилах. Если UDP не идёт, нужен другой узел: VLESS Reality напрямую, Hysteria2, TUIC, WireGuard или AmneziaWG.</p></div>
-
+<div class="note warn"><p><strong>Проверяйте конкретную связку.</strong> Узел должен переносить и удерживать игровой UDP. Нельзя определить поддержку UDP только по названию VLESS, WebSocket или whitelist: возможен перенос UDP внутри TCP-транспорта, а ограничения зависят от конфигурации и сервиса. STUN — предварительная проба, не гарантия работы игрового сервера.</p></div>
 <h3>Итог на реальной конфигурации</h3>
-<p>После четырёх шагов лог показал <code>Found lobby, joining...</code>, <code>Joined lobby</code>, вход в хаб. Ошибок авторизации и отзыва сертификатов ноль. Выход туннеля в Швеции, хаб в Стокгольме, пинг рабочий.</p>
-
+<p>Исторический результат 10–11 сентября: вход в хаб на конфигурации с выходом в Швеции. Логи 1 октября показывают успешный вход с последующими отключениями. Проверяйте не только <code>Joined lobby</code>, но и удержание сессии, вход в миссию и возвращение.</p>
 <h2 id="pc">6. Другие варианты на ПК <span class="tag a">не проверено</span></h2>
 <p>Если роутера с прокси нет, а zapret из раздела 4 не вытянул причину C ни на одной стратегии, обход UDP нужно поднять на самом компьютере. Обычный клиент Cloudflare WARP <strong>не работает</strong>: оба его протокола, MASQUE и WireGuard, блокируются (проверено, подключение не устанавливается ни на одном порту).</p>
 <p>Рабочий вариант из гайдов сообщества: AmneziaVPN с конфигом WARP через AmneziaWG-обфускацию (конфиг генерируется на warpgen.net или аналогах). Этот путь мной не проверялся, но именно он описан в актуальных Steam-гайдах по 3013. После подключения прогоните STUN-тест из раздела 7: первая строка должна стать REPLY. Любой другой VPN-клиент на ПК подойдёт при том же условии: он должен пропускать UDP, и его сервер должен дотягиваться до AWS.</p>
-
 <h2 id="check">7. Проверка без запуска игры</h2>
 <p>Три проверки, каждая на свою причину. Запускать в PowerShell.</p>
-
 <h3>Причина A: TLS к серверу авторизации</h3>
-<p>Норма: <span class="mono">code=404</span> меньше чем за секунду. Поломка: <span class="mono">code=000</span> и 15–60 секунд.</p>
-<pre><code>curl.exe -4 -s -o NUL -m 30 -w "auth: code=%{http_code} time=%{time_total}s`n" https://bsp-auth-prod.atoma.cloud/</code></pre>
-
+<p>Проверяйте текущий identity-endpoint. HTTP 401/403/404 без игровых учётных данных может подтверждать достижимость HTTP-службы, но не вход в игру. <code>code=000</code> означает отсутствие HTTP-статуса и не устанавливает причину. Для неудачного запроса нужен подробный вывод <code>-v</code>.</p>
+<pre><code>curl.exe -4 -sS -o NUL -m 30 -w "auth: code=%{http_code} time=%{time_total}s`n" https://login.shr-prod-identity.fatshark.services/</code></pre>
 <h3>Причина B: серверы отзыва Amazon</h3>
-<p>Норма: <span class="mono">code=200</span> за доли секунды.</p>
+<p>Следующий GET проверяет только HTTP-ответ хоста, не статус отзыва сертификата. HTTP 200 на корневом URL не заменяет корректный OCSP-запрос. Разбирайте проверку отзыва по явной ошибке Schannel и URL фактической цепочки.</p>
 <pre><code>curl.exe -4 -s -o NUL -m 12 -w "amazontrust: code=%{http_code} time=%{time_total}s`n" http://ocsp.r2m02.amazontrust.com/</code></pre>
-
 <h3>Причина C: UDP до AWS</h3>
-<p>Сохраните как <span class="mono">stun_test.ps1</span> и запустите <span class="mono">powershell -ExecutionPolicy Bypass -File stun_test.ps1</span>. Первая строка проверяет UDP до сервера в AWS Франкфурт тем же путём, каким игра ищет хаб. Вторая, контрольная, до сервера вне AWS: если молчит и она, UDP порезан целиком.</p>
+<p>Сохраните как <code>stun_test.ps1</code> и запустите в PowerShell. Это предварительная проба двух конкретных STUN-endpoint на UDP 3478. Их текущая доступность здесь не проверена. Отсутствие ответа двух серверов не доказывает блокировку всего UDP.</p>
 <pre><code>$targets = @(@('18.156.18.145',3478,'AWS eu-central-1'), @('46.225.95.169',3478,'Hetzner DE, контроль'))
 foreach ($t in $targets) {
   $ip,$port,$name = $t
@@ -520,124 +502,110 @@ foreach ($t in $targets) {
   catch { Write-Host ("{0,-24} {1}:{2}  NO REPLY" -f $name,$ip,$port) }
   finally { $u.Close() }
 }</code></pre>
-<p>Это STUN-запрос: сервер просто отвечает, откуда его видит. Если строка AWS даёт REPLY, хаб подключится.</p>
-
+<p>Ответ STUN на UDP 3478 не гарантирует подключение Darktide к другому IP на 355xx. Скрипт помечает любой полученный пакет как REPLY без проверки типа и transaction ID. Итог проверяйте в игре: удержание хаба, миссия и возвращение. DNS исключён как причина текущего сбоя; тестов смены DNS здесь нет.</p>
 <h2 id="no">8. Что не помогает</h2>
 <ul>
-  <li><strong>Клиент Cloudflare WARP.</strong> Заблокирован на уровне протокола, не подключается.</li>
-  <li><strong>ipconfig /flushdns, смена DNS на 8.8.8.8, проверка файлов игры.</strong> Проблема не в DNS и не в файлах: имена резолвятся, TLS и UDP режутся на пути.</li>
-  <li><strong>Отключение Nvidia Reflex.</strong> Совет из англоязычных гайдов, к сетевой причине отношения не имеет.</li>
-  <li><strong>Отключение проверки отзыва сертификатов в Windows.</strong> Снимает причину B, но ослабляет безопасность всей системы. Правило «amazontrust.com напрямую» делает то же без побочных эффектов.</li>
-  <li><strong>Только домены в прокси-списке.</strong> Хаб ищется по IP через UDP, доменные правила его не ловят. Без IP-правил и узла с UDP причина C остаётся.</li>
+<li><strong>Клиент Cloudflare WARP.</strong> Заблокирован на уровне протокола, не подключается.</li>
+<li><strong>Смена DNS и ipconfig /flushdns.</strong> По уточнению автора DNS не является причиной текущей проблемы. Эти действия не предлагаются как исправление наблюдаемых отказов входа и игровых разрывов. Сам тайм-аут этапа не устанавливает первопричину.</li>
+<li><strong>Отключение Nvidia Reflex.</strong> Совет из англоязычных гайдов, к сетевой причине отношения не имеет.</li>
+<li><strong>Отключение проверки отзыва сертификатов в Windows.</strong> Снимает причину B, но ослабляет безопасность всей системы. Правило «amazontrust.com напрямую» делает то же без побочных эффектов.</li>
+<li><strong>Только домены в прокси-списке.</strong> Хаб ищется по IP через UDP, доменные правила его не ловят. Без IP-правил и узла с UDP причина C остаётся.</li>
 </ul>
-
-<footer>Собрано 10–11 сентября 2026 по логам игры и сетевым тестам с одного ПК. Провайдеры фильтруют по-разному, у вас набор причин может отличаться, поэтому начинайте с раздела 2. Исходники и архив для zapret: <a href="https://github.com/Khamal976/darktide3013">github.com/Khamal976/darktide3013</a>.</footer>
+<footer>Собрано 10–11 сентября 2026 по логам игры и сетевым тестам с одного ПК. Провайдеры фильтруют по-разному, у вас набор причин может отличаться, поэтому начинайте с раздела 2. Исходники и архив для zapret: <a href="https://github.com/Khamal976/darktide3013">github.com/Khamal976/darktide3013</a>.</footer><p class="meta">Обновлено 1 октября 2026: добавлен fatshark.services, учтены текущие identity/gRPC endpoint и разрывы игровых сессий. ZIP и генератор по ссылке не изменяются автоматически вместе со страницей.</p>
 </div>
-
 <!-- ======================= EN ======================= -->
-<div class="lang" data-lang="en" hidden>
+<div class="lang" data-lang="en" hidden="">
 <header>
-  <h1>Error 3013: three causes behind one code, and how to fix each</h1>
-  <p class="lede">Darktide shows code 3013 for any network failure between sign-in and entering the hub. For players in Russia, three different breakages hide behind it, and each needs a different fix. Below: how to tell yours from the game log, and what to do about it.</p>
-  <div class="meta">Worked out on a real PC (Windows 11, Steam, an OpenWrt router running Passwall 2). Everything marked "verified" was reproduced and confirmed by the game log. The rest is collected from community guides and was not tested.</div>
+<h1>Error 3013: causes, diagnosis and fixes</h1>
+<p class="lede">Do not infer the cause from the error number alone. Distinguish failed sign-in, failed hub connection and loss of an established game session. Below are the log signatures and workaround settings for each stage.</p>
+<div class="meta">Worked out on a real PC (Windows 11, Steam, an OpenWrt router running Passwall 2). Everything marked "verified" was reproduced and confirmed by the game log. The rest is collected from community guides and was not tested.</div>
 </header>
-
-<nav class="toc" aria-label="Contents">
+<nav aria-label="Contents" class="toc">
 <ol>
-  <li><a href="#what">What is really behind 3013</a></li>
-  <li><a href="#diag">Find your cause in the log</a></li>
-  <li><a href="#hosts">Where the game connects</a></li>
-  <li><a href="#zapret">Easiest: a drop-in file for zapret</a></li>
-  <li><a href="#router">Fix on the router (OpenWrt + Passwall 2)</a></li>
-  <li><a href="#pc">Other options on the PC</a></li>
-  <li><a href="#check">Checks without launching the game</a></li>
-  <li><a href="#no">What does not help</a></li>
+<li><a href="#what">What is really behind 3013</a></li>
+<li><a href="#diag">Find your cause in the log</a></li>
+<li><a href="#hosts">Where the game connects</a></li>
+<li><a href="#zapret">Easiest: a drop-in file for zapret</a></li>
+<li><a href="#router">Fix on the router (OpenWrt + Passwall 2)</a></li>
+<li><a href="#pc">Other options on the PC</a></li>
+<li><a href="#check">Checks without launching the game</a></li>
+<li><a href="#no">What does not help</a></li>
 </ol>
 </nav>
-
 <h2>1. What is really behind 3013</h2>
-<p>The game goes through three network stages, and any of them can fail into 3013.</p>
-
-<div class="cause"><span class="k">Cause A</span><span><strong>Sign-in never reaches the server.</strong> Fatshark's backend (<span class="mono">*.atoma.cloud</span>) sits on AWS CloudFront. The ISP lets TCP through but kills the TLS handshake to CloudFront: the connection hangs for 60 seconds and drops. Symptom: 3013 right on the login screen.</span></div>
-<div class="cause"><span class="k">Cause B</span><span><strong>Windows cannot check the server certificate.</strong> Before TLS, Windows fetches revocation lists from <span class="mono">*.amazontrust.com</span> over plain HTTP. If that traffic is routed into a VPN tunnel that cannot reach Amazon, sign-in fails with a revocation error. Symptom: login succeeds "on the second or third try", sometimes never. Without a VPN this cause does not occur.</span></div>
+<p>This guide covers several network causes. The on-screen code and console-log error name may differ: identify the last completed stage and the reported failure reason.</p>
+<div class="cause"><span class="k">Cause A</span><span><strong>The connection to identity or backend does not complete in time.</strong> Historical tests showed a Schannel TLS timeout; newer logs also contain Connection timed out. This is a connection symptom, not automatic proof of CloudFront filtering. The current identity endpoint is <span class="mono">login.shr-prod-identity.fatshark.services</span>.</span></div>
+<div class="cause"><span class="k">Cause B</span><span><strong>Certificate revocation checking fails.</strong> Investigate this branch when <span class="mono">CRYPT_E_REVOCATION_OFFLINE</span> is explicitly reported. Direct routing for Amazon Trust helped the historical setup. This signature is absent from the latest log; Direct is not a universal requirement for every network.</span></div>
 <div class="cause"><span class="k">Cause C</span><span><strong>UDP does not reach the hub server.</strong> After character select the game looks for the Mourningstar server by bare IP on UDP port 355xx. Those servers live in AWS (Frankfurt, Ireland, Stockholm), and UDP to them does not get through from Russia. Symptom: the character screen opens, then 3013 every time after picking one.</span></div>
-
-<div class="note"><p>The causes stack. Usually you see A first; fix it and B shows up; fix B and C remains. So "I fixed it and still get 3013" most often means the wrong cause was fixed.</p></div>
-
+<div class="note"><p>Causes can overlap. After sign-in succeeds, check the game-server connection and session stability separately. The author has ruled out DNS as the cause of the current issue; changing resolvers or flushing the cache is not proposed as its fix.</p></div>
 <div class="note warn"><p><strong>The block flickers.</strong> UDP filtering to AWS comes and goes: on the same ISP the game connects on its own one day and returns 3013 the next. Confirmed by a direct measurement from one PC: on 9–10 September UDP to AWS did not pass at all, on 11 September the same test went through directly, with no workaround. Two takeaways. If 3013 "fixed itself", do not remove your workaround, you will need it when the block returns. And the other way round, if nothing helps, it is worth simply trying again later: you may have hit an active phase.</p></div>
-
 <h2>2. Find your cause in the log</h2>
 <p>The game writes a detailed log. Open this folder (paste the path into the Explorer address bar):</p>
 <pre><code>%APPDATA%\Fatshark\Darktide\console_logs</code></pre>
 <p>Take the newest <span class="mono">console-YYYY-MM-DD-….log</span> and search it for the lines in the table. Search by the short fragment shown.</p>
-
 <div class="tablewrap">
 <table>
 <thead><tr><th>Line in the log</th><th>Cause</th><th>Meaning</th></tr></thead>
 <tbody>
-<tr><td><code>schannel: timed out sending data (bytes sent: 0)</code><br>next to <code>Auth operation 1 error</code></td><td><span class="tag bad">A</span></td><td>TLS to the auth server never completes: the ISP is throttling CloudFront.</td></tr>
+<tr><td><code>schannel: timed out sending data (bytes sent: 0)</code><br/>next to <code>Auth operation 1 error</code></td><td><span class="tag bad">A</span></td><td>Schannel TLS/data transfer did not complete in time. Check routing and surrounding lines rather than assigning blame from this signature alone.</td></tr>
 <tr><td><code>CRYPT_E_REVOCATION_OFFLINE (0x80092013)</code></td><td><span class="tag bad">B</span></td><td>Windows could not reach Amazon's certificate revocation servers.</td></tr>
-<tr><td><code>Searching for WAN lobby on 52.208.x.x:35560</code><br>then 3 seconds later <code>Found no lobby, search finished.</code><br>and <code>failed_found_no_lobby</code></td><td><span class="tag bad">C</span></td><td>UDP packets to the hub server did not arrive or did not come back.</td></tr>
-<tr><td><code>Found lobby, joining...</code> → <code>Joined lobby</code> → <code>Mechanism hub changing state init_hub -&gt; in_hub</code></td><td><span class="tag good">OK</span></td><td>Everything works, you are in the hub.</td></tr>
-</tbody>
+<tr><td><code>Searching for WAN lobby on 52.208.x.x:35560</code><br/>then 3 seconds later <code>Found no lobby, search finished.</code><br/>and <code>failed_found_no_lobby</code></td><td><span class="tag bad">C</span></td><td>UDP packets to the hub server did not arrive or did not come back.</td></tr>
+<tr><td><code>Found lobby, joining...</code> → <code>Joined lobby</code> → <code>Mechanism hub changing state init_hub -&gt; in_hub</code></td><td><span class="tag good">OK</span></td><td>The hub connection succeeded. Session stability still needs to be checked.</td></tr>
+<tr><td><code>name_verification -&gt; done</code></td><td><span class="tag bad">Stage</span></td><td>Sign-in completed; subsequent game-channel failures are a separate stage.</td></tr><tr><td><code>timed out waiting for channel accept / failed_joining_lobby</code></td><td><span class="tag bad">Stage</span></td><td>Connection to the selected game server did not complete.</td></tr><tr><td><code>Channel ... reason pong_timeout</code></td><td><span class="tag bad">Stage</span></td><td>The specified game channel lost connectivity; this is not necessarily an HTTPS-backend failure.</td></tr><tr><td><code>AdaptiveClockHandler ... panic / lost_session</code></td><td><span class="tag bad">Stage</span></td><td>Session synchronization trouble and session loss. This does not prove incorrect Windows system time.</td></tr></tbody>
 </table>
-</div>
-
+</div><div class="note"><p>October 1 log update: sign-in completed at 18:44:52.666; the first hub disconnected at 18:46:19 with pong_timeout, the second at 18:49:24–25 after AdaptiveClockHandler panic and lost_session. The client then joined another hub. Resolving timed out messages in this run are not treated as proof that DNS is the root cause.</p></div>
 <p>Ignore <code>Vivox … Connection Terminated</code> lines: that is voice chat, it does not affect getting into the game.</p>
-
 <h2>3. Where the game connects</h2>
 <p>You need these addresses to configure any workaround. Collected from the game's own logs.</p>
 <div class="tablewrap">
 <table>
 <thead><tr><th>Purpose</th><th>Addresses</th><th>Protocol</th></tr></thead>
 <tbody>
-<tr><td>Discovery and sign-in</td><td class="mono">bsp-sup-sd.atoma-discovery.com<br>bsp-auth-prod.atoma.cloud</td><td>TCP 443</td></tr>
-<tr><td>Backend, matchmaking, CDN</td><td class="mono">bsp-td-prod.atoma.cloud<br>bsp-td-prod-matchmaking.atoma.cloud<br>bsp-cdn-prod.atoma.cloud<br>fr-prod.atoma.cloud</td><td>TCP 443 (HTTPS and gRPC)</td></tr>
-<tr><td>Certificate revocation checks</td><td class="mono">ocsp.r2m02.amazontrust.com<br>crl.r2m02.amazontrust.com<br>crl.rootca1.amazontrust.com<br>ocsp.rootca1.amazontrust.com</td><td>TCP 80, must go direct</td></tr>
+<tr><td>Discovery and sign-in</td><td class="mono">bsp-sup-sd.atoma-discovery.com<br/>login.shr-prod-identity.fatshark.services</td><td>TCP 443</td></tr>
+<tr><td>Backend, matchmaking, CDN</td><td class="mono">bsp-td-prod.atoma.cloud<br/>bsp-td-prod-matchmaking.atoma.cloud<br/>bsp-cdn-prod.atoma.cloud<br/>fr-prod.atoma.cloud<br/>bsp-im-prod.atoma.cloud</td><td>TCP 443 (HTTPS and gRPC)</td></tr>
+<tr><td>Certificate revocation checks</td><td class="mono">ocsp.r2m02.amazontrust.com<br/>crl.r2m02.amazontrust.com<br/>crl.rootca1.amazontrust.com<br/>ocsp.rootca1.amazontrust.com</td><td>TCP 80; Direct helped the author’s test</td></tr>
 <tr><td>Hub and game servers</td><td>AWS EC2 IPs in eu-central-1, eu-west-1, eu-north-1 (for example 18.192.179.115, 52.208.211.66, 13.61.11.157). No domain, IP only.</td><td>UDP 35500–35600</td></tr>
 </tbody>
 </table>
-</div>
-
+</div><div class="note"><p>Use the parent domain <code>fatshark.services</code> in the zapret hostlist: it covers the current identity endpoint and other subdomains. The suffix is <code>.services</code>, with the final s; omit <code>https://</code> and <code>*.</code>. Adding the domain fixes an incomplete list, but does not guarantee a fix for game-UDP disconnects.</p></div>
 <h2>4. Easiest: a drop-in file for zapret <span class="tag a">works per player reports</span></h2>
-<p>If you already run zapret (the <span class="mono">Flowseal/zapret-discord-youtube</span> build, version 1.9 or newer), both main causes, A and C, are closed by two files. Nothing to edit.</p>
-<a class="dl" href="https://khamal976.github.io/darktide3013/zapret-darktide.zip">Download zapret-darktide.zip</a>
+<p>If you run zapret (Flowseal/zapret-discord-youtube), the generator adds the game UDP ports and creates strategy variants. Test the selected strategy on your network; starting winws does not guarantee successful sign-in or a stable hub session.</p>
+<a class="dl" href="https://khamal976.github.io/darktide3013/zapret-darktide.zip">Download zapret-darktide.zip</a><div class="note warn"><p><strong>Domain-list update.</strong> Check <code>darktide-setup.ps1</code> before running it. The array must be:</p><pre><code>$domains = @('atoma.cloud','atoma-discovery.com','fatshark.services')</code></pre><p>For an older archive, replace the array manually and rerun setup. <code>lists\list-general-user.txt</code> must contain:</p><pre><code>atoma.cloud
+atoma-discovery.com
+fatshark.services</code></pre><p>The narrower <code>login.shr-prod-identity.fatshark.services</code> entry is redundant and may be removed manually; setup does not remove it automatically. Back up manually edited <code>darktide*.bat</code> before regenerating them, then restart the strategy and game. Updating this page does not update the linked ZIP archive.</p></div>
 <ol>
-  <li>Unpack the archive. Put <span class="mono">darktide-setup.bat</span> and <span class="mono">darktide-setup.ps1</span> into the zapret folder, next to <span class="mono">general.bat</span>.</li>
-  <li>Double-click <span class="mono">darktide-setup.bat</span>. It adds the game's domains to <span class="mono">lists\list-general-user.txt</span> and creates <span class="mono">darktide.bat</span>, <span class="mono">darktide (ALT).bat</span>, <span class="mono">darktide (ALT2).bat</span> and so on, one per strategy in the folder.</li>
-  <li>Double-click <span class="mono">darktide.bat</span> and accept the administrator (UAC) prompt. A window opens and stays open. Lines like <span class="mono">windivert initialized. capture is started.</span> mean it works: keep the window open and launch the game.</li>
-  <li>If 3013 persists, close the window and take the next one: <span class="mono">darktide (ALT).bat</span>, <span class="mono">ALT2</span>, <span class="mono">ALT3</span> and so on. The strategy has to match your ISP, exactly as for YouTube. If <span class="mono">general (ALT11).bat</span> works for you, use <span class="mono">darktide (ALT11).bat</span>.</li>
+<li>Unpack the archive. Put <span class="mono">darktide-setup.bat</span> and <span class="mono">darktide-setup.ps1</span> into the zapret folder, next to <span class="mono">general.bat</span>.</li>
+<li>Double-click <span class="mono">darktide-setup.bat</span>. It adds the game's domains to <span class="mono">lists\list-general-user.txt</span> and creates <span class="mono">darktide.bat</span>, <span class="mono">darktide (ALT).bat</span>, <span class="mono">darktide (ALT2).bat</span> and so on, one per strategy in the folder.</li>
+<li>Run <code>darktide.bat</code> as administrator. <code>capture is started</code> confirms packet capture, not a successful bypass. Keep the window open during the game test.</li>
+<li>If 3013 persists, close the window and take the next one: <span class="mono">darktide (ALT).bat</span>, <span class="mono">ALT2</span>, <span class="mono">ALT3</span> and so on. The strategy has to match your ISP, exactly as for YouTube. If <span class="mono">general (ALT11).bat</span> works for you, use <span class="mono">darktide (ALT11).bat</span>.</li>
 </ol>
 <ul>
-  <li><strong>The window is visible on purpose.</strong> winws runs in the open window; while it is open, protection is on; close it and protection stops. If instead of the windivert lines the window shows <span class="mono">winws has STOPPED</span> and waits for a key, that strategy did not fit: close it and run the next one, <span class="mono">darktide (ALT).bat</span>, ALT2, ALT3 and so on. It closes the previous winws itself, so just launch the next file. If none work, reboot the PC and try again.</li>
-  <li><strong>A fresh build works as is.</strong> Nothing extra to install: the generator uses the PowerShell built into Windows and the build's own files. Verified on 1.10.0 and 1.10.2; builds older than 1.9 lack <span class="mono">bin\stun.bin</span>.</li>
-  <li><strong>After updating zapret</strong> the new version sits in a new folder and the <span class="mono">darktide*.bat</span> files do not move with it. Copy the same two files there and run <span class="mono">darktide-setup.bat</span> again.</li>
+<li><strong>If winws stops:</strong> read the error message. <code>winws has STOPPED</code> can indicate parameters, permissions, driver problems or a conflict, not just an unsuitable strategy. Generated BAT files stop all <code>winws.exe</code> instances and stop/delete the WinDivert service; account for other running instances.</li>
+<li><strong>A fresh build works as is.</strong> Nothing extra to install: the generator uses the PowerShell built into Windows and the build's own files. Verified on 1.10.0 and 1.10.2; builds older than 1.9 lack <span class="mono">bin\stun.bin</span>.</li>
+<li><strong>After updating zapret</strong> the new version sits in a new folder and the <span class="mono">darktide*.bat</span> files do not move with it. Copy the same two files there and run <span class="mono">darktide-setup.bat</span> again.</li>
 </ul>
 <h3>What the change does and why it works</h3>
 <p>Each <span class="mono">darktide*.bat</span> is a copy of the matching <span class="mono">general*.bat</span> with three differences. Ports 35000–36000, where Darktide's hub and game servers live, are added to the UDP capture. The first profile is a rule that sends a fake STUN request (<span class="mono">bin\stun.bin</span>) ahead of the game's first packets to those ports. And in the Game Filter profile, where the strategy has one, the <span class="mono">ACTIVE_GAME_UDP.bin</span> fake is replaced with the same <span class="mono">stun.bin</span>.</p>
-<p>The point is how the Russian DPI (TSPU) classifies a UDP flow: by its first packet. Unknown UDP to blocked AWS hosting gets dropped, but a flow that starts with STUN is treated as a voice call and let through, because otherwise every messenger would break. This is exactly how zapret fixes Discord voice. The <span class="mono">ACTIVE_GAME_UDP.bin</span> fake that used to rescue games stopped passing by September 2026; STUN still passes.</p>
+<p>Players reported that replacing the game fake payload with STUN helped bypass filtering. First-packet DPI classification is a proposed explanation, not proof of the exact TSPU implementation. Results depend on the network and strategy.</p>
 <p>Swapping <span class="mono">ACTIVE_GAME_UDP.bin</span> for <span class="mono">stun.bin</span> is a find by the player Aradiel in the <a href="https://steamcommunity.com/app/1361210/discussions/0/565912359496984390/">Steam discussion</a>: it worked for them on 11 Sep 2026 with strategy ALT11 and Game Filter (TCP and UDP) enabled. The archive above does the same automatically and does not require enabling Game Filter, because the rule for the game's ports is added separately.</p>
 <div class="note"><p><strong>Status.</strong> The mechanism is confirmed by player reports and the archive's output is verified, but the full cycle "direct ISP path + darktide.bat + entering the hub" has not been run on my PC yet: my AWS traffic goes through the router. Once it is, this tag becomes "verified". Whether it worked for you or not, post your strategy and ISP in the Steam thread.</p></div>
-
-<h2>5. Fix on the router (OpenWrt + Passwall 2) <span class="tag good">verified</span></h2>
+<h2>5. Fix on the router (OpenWrt + Passwall 2) <span class="tag good">historical test</span></h2>
 <p>The most reliable path: the router does all the bypassing, nothing is installed on the PC. The scheme applies to any proxy with domain and IP rules (sing-box, xray, HomeProxy, Podkop); field names will differ.</p>
-
 <h3>Step 1. Game domains into the tunnel</h3>
-<p>Add the domains to the rule that goes to your foreign node. This closes cause A.</p>
+<p>If game services should use the foreign node, add the following domains. Check the actual outbound and rule priority; adding an entry alone does not prove a fix.</p>
 <pre><code>domain:atoma.cloud
-domain:atoma-discovery.com</code></pre>
-
+domain:atoma-discovery.com
+domain:fatshark.services</code></pre>
 <h3>Step 2. Amazon Trust goes direct</h3>
 <p>Create a rule <strong>above</strong> the proxy rule with the node set to "Direct Connection" and the domain:</p>
 <pre><code>domain:amazontrust.com</code></pre>
-<p>This closes cause B. These hosts must not go through the tunnel: from most foreign nodes they do not answer, and Windows treats the revocation check as failed.</p>
-
+<p>Direct routing for Amazon Trust resolved revocation errors in the historical setup. This is not a universal ban on tunneling: when explicitly reported, check the actual certificate chain URLs through the selected route. The latest log has no explicit revocation error.</p>
 <h3>Step 3. AWS subnets into the tunnel, TCP and UDP</h3>
-<p>The hub is found by IP, there is no domain, so IP rules are required. Create a rule to the foreign node with Network = "TCP and UDP" and paste the subnets. The three most common:</p>
+<p>The hub uses an IP:port; game UDP rules are needed if it should use the node. The three historical examples below are not a sufficient list: they cover only 1 of 9 unique game IPs in the September 29–October 1 logs. The full list below covers all 9.</p>
 <pre><code>18.192.0.0/13
 52.208.0.0/13
 51.20.0.0/15</code></pre>
-<p>Hubs rotate between regions, so it is safer to paste the full list of AWS EC2 subnets in Europe. It is built from Amazon's official <span class="mono">ip-ranges.json</span> and collapsed to 285 lines:</p>
+<p>The 285-prefix list from the earlier version is retained below. Its current completeness against AWS has not been checked, but it covers the supplied logs’ game IPs. If this list already applies, adding those addresses again is unnecessary.</p>
 <details>
 <summary>Full list: 285 AWS EC2 subnets, eu-* regions</summary>
 <pre><code>1.178.7.0/24
@@ -927,30 +895,23 @@ domain:atoma-discovery.com</code></pre>
 216.244.38.0/23</code></pre>
 </details>
 <p>In Passwall 2 also check: Forwarding Settings → TCP Redir Ports and UDP Redir Ports = All.</p>
-
 <h3>Step 4. The node must carry UDP</h3>
-<div class="note warn"><p><strong>The main trap.</strong> "Whitelist" nodes (VLESS + WebSocket through a Russian front relay with SNI spoofing) carry TCP but not UDP. With such a node steps 1–3 are done, sign-in works, and the hub still gives 3013. Check the node with the STUN test from section 7 before hunting for a mistake in the rules. If UDP does not pass, you need a different node: direct VLESS Reality, Hysteria2, TUIC, WireGuard or AmneziaWG.</p></div>
-
+<div class="note warn"><p><strong>Test the actual setup.</strong> The node must carry and sustain game UDP. VLESS, WebSocket or whitelist labels alone do not establish UDP support: UDP can be carried inside a TCP transport, while limitations depend on configuration and service. STUN is a preliminary probe, not a guarantee that the game server will work.</p></div>
 <h3>Result on a real setup</h3>
-<p>After the four steps the log showed <code>Found lobby, joining...</code>, <code>Joined lobby</code>, and entry into the hub. Zero sign-in errors, zero revocation errors. Tunnel exit in Sweden, hub in Stockholm, playable ping.</p>
-
+<p>Historical result on September 10–11: the setup with a Swedish exit joined the hub. October 1 logs show successful sign-in followed by disconnects. Check not only <code>Joined lobby</code>, but session stability, mission entry and return.</p>
 <h2>6. Other options on the PC <span class="tag a">not tested</span></h2>
 <p>If you have no router with a proxy and zapret from section 4 did not solve cause C on any strategy, the UDP bypass has to run on the PC itself. The regular Cloudflare WARP client <strong>does not work</strong>: both of its protocols, MASQUE and WireGuard, are blocked (verified: it fails to connect on every port).</p>
 <p>The working option from community guides: AmneziaVPN with a WARP config over AmneziaWG obfuscation (the config is generated on warpgen.net or similar). I did not test this path myself, but it is the one described in the current Steam guides for 3013. After connecting, run the STUN test from section 7: the first line must become REPLY. Any other VPN client on the PC will do under the same condition: it must carry UDP, and its server must be able to reach AWS.</p>
-
 <h2>7. Checks without launching the game</h2>
 <p>Three checks, one per cause. Run in PowerShell.</p>
-
 <h3>Cause A: TLS to the auth server</h3>
-<p>Healthy: <span class="mono">code=404</span> in under a second. Broken: <span class="mono">code=000</span> after 15–60 seconds.</p>
-<pre><code>curl.exe -4 -s -o NUL -m 30 -w "auth: code=%{http_code} time=%{time_total}s`n" https://bsp-auth-prod.atoma.cloud/</code></pre>
-
+<p>Probe the current identity endpoint. HTTP 401/403/404 without game credentials may confirm HTTP reachability, not game sign-in. <code>code=000</code> means no HTTP status was received and does not identify the cause. Use <code>-v</code> for a failed request.</p>
+<pre><code>curl.exe -4 -sS -o NUL -m 30 -w "auth: code=%{http_code} time=%{time_total}s`n" https://login.shr-prod-identity.fatshark.services/</code></pre>
 <h3>Cause B: Amazon revocation servers</h3>
-<p>Healthy: <span class="mono">code=200</span> in a fraction of a second.</p>
+<p>The following GET probes only the host’s HTTP response, not certificate revocation status. HTTP 200 at the root URL is not a valid OCSP check. Investigate revocation using an explicit Schannel error and the actual certificate chain URLs.</p>
 <pre><code>curl.exe -4 -s -o NUL -m 12 -w "amazontrust: code=%{http_code} time=%{time_total}s`n" http://ocsp.r2m02.amazontrust.com/</code></pre>
-
 <h3>Cause C: UDP to AWS</h3>
-<p>Save as <span class="mono">stun_test.ps1</span> and run <span class="mono">powershell -ExecutionPolicy Bypass -File stun_test.ps1</span>. The first line checks UDP to a server in AWS Frankfurt over the same path the game uses to find the hub. The second is a control against a non-AWS server: if that one is silent too, UDP is cut entirely.</p>
+<p>Save as <code>stun_test.ps1</code> and run it in PowerShell. This is a preliminary probe of two specific STUN endpoints on UDP 3478. Their current availability has not been checked here. Two silent servers do not prove all UDP is blocked.</p>
 <pre><code>$targets = @(@('18.156.18.145',3478,'AWS eu-central-1'), @('46.225.95.169',3478,'Hetzner DE, control'))
 foreach ($t in $targets) {
   $ip,$port,$name = $t
@@ -964,26 +925,23 @@ foreach ($t in $targets) {
   catch { Write-Host ("{0,-24} {1}:{2}  NO REPLY" -f $name,$ip,$port) }
   finally { $u.Close() }
 }</code></pre>
-<p>This is a STUN request: the server simply answers with where it sees you from. If the AWS line says REPLY, the hub will connect.</p>
-
+<p>A STUN reply on UDP 3478 does not guarantee Darktide connectivity to another IP on 355xx. This script labels any received packet REPLY without validating its type or transaction ID. Verify the actual result in-game: stable hub, mission and return. DNS is ruled out as the cause of the current issue; no DNS-change tests are proposed here.</p>
 <h2>8. What does not help</h2>
 <ul>
-  <li><strong>The Cloudflare WARP client.</strong> Blocked at the protocol level, does not connect.</li>
-  <li><strong>ipconfig /flushdns, switching DNS to 8.8.8.8, verifying game files.</strong> The problem is neither DNS nor files: names resolve fine, TLS and UDP are cut on the path.</li>
-  <li><strong>Disabling Nvidia Reflex.</strong> A tip from English-language guides; unrelated to the network cause.</li>
-  <li><strong>Disabling certificate revocation checking in Windows.</strong> Removes cause B but weakens security system-wide. The "amazontrust.com direct" rule does the same with no side effects.</li>
-  <li><strong>Domains only in the proxy list.</strong> The hub is found by IP over UDP; domain rules never match it. Without IP rules and a node that carries UDP, cause C remains.</li>
+<li><strong>The Cloudflare WARP client.</strong> Blocked at the protocol level, does not connect.</li>
+<li><strong>Changing DNS and ipconfig /flushdns.</strong> The author has ruled out DNS as the cause of the current issue. These actions are not proposed as a fix for the observed sign-in failures and game disconnects. A stage timeout alone does not establish the root cause.</li>
+<li><strong>Disabling Nvidia Reflex.</strong> A tip from English-language guides; unrelated to the network cause.</li>
+<li><strong>Disabling certificate revocation checking in Windows.</strong> Removes cause B but weakens security system-wide. The "amazontrust.com direct" rule does the same with no side effects.</li>
+<li><strong>Domains only in the proxy list.</strong> The hub is found by IP over UDP; domain rules never match it. Without IP rules and a node that carries UDP, cause C remains.</li>
 </ul>
-
-<footer>Compiled 10–11 September 2026 from game logs and network tests on one PC. ISPs filter differently, your set of causes may differ, so start with section 2. Sources and the zapret archive: <a href="https://github.com/Khamal976/darktide3013">github.com/Khamal976/darktide3013</a>.</footer>
+<footer>Compiled 10–11 September 2026 from game logs and network tests on one PC. ISPs filter differently, your set of causes may differ, so start with section 2. Sources and the zapret archive: <a href="https://github.com/Khamal976/darktide3013">github.com/Khamal976/darktide3013</a>.</footer><p class="meta">Updated October 1, 2026: added fatshark.services, current identity/gRPC endpoints and game-session disconnects. The linked ZIP and generator are not automatically updated with this page.</p>
 </div>
 </div>
-
 <script>
 (function(){
   var strings = {
-    ru: {eyebrow: "Warhammer 40,000: Darktide · Россия · сентябрь 2026", title: "Darktide 3013"},
-    en: {eyebrow: "Warhammer 40,000: Darktide · Russia · September 2026", title: "Darktide 3013"}
+    ru: {eyebrow: "Warhammer 40,000: Darktide · Россия · октябрь 2026", title: "Darktide 3013"},
+    en: {eyebrow: "Warhammer 40,000: Darktide · Russia · October 2026", title: "Darktide 3013"}
   };
   function setLang(l){
     if (!strings[l]) l = "ru";
