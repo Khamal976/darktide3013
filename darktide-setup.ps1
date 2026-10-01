@@ -50,6 +50,7 @@ Get-ChildItem -Path $root -Filter 'general*.bat' | ForEach-Object {
   if (-not $inserted) { Say ("[skip] " + $_.Name + ": winws line not found"); return }
   # c) if the strategy has a game-filter UDP profile, use the STUN payload there too (community fix)
   $result = ($out -join "`r`n") -replace 'ACTIVE_GAME_UDP\.bin', 'stun.bin'
+  $result = $result -replace 'stun2\.bin', 'stun.bin'
   [System.IO.File]::WriteAllText($dst, $result, $utf8)
   $made++
   Say ("[ok] " + (Split-Path -Leaf $dst))
